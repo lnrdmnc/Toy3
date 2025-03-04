@@ -2,6 +2,7 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.expr.Expr;
+import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
 public class WriteOp extends ASTNode  implements Stat {
     private ArrayList<Expr> expressions; // Lista di espressioni da stampare
     private  boolean newLine; // Indica se si usa write o writeln
+    private TabellaDeiSimboli tabella;
+
 
     // Costruttore principale
     public WriteOp(ArrayList<Expr> expressions, boolean newLine) {
@@ -29,9 +32,13 @@ public class WriteOp extends ASTNode  implements Stat {
         this.expressions = expressions;
     }
 
+    public TabellaDeiSimboli getTabella() {
+        return tabella;
+    }
 
-
-
+    public void setTabella(TabellaDeiSimboli tabella) {
+        this.tabella = tabella;
+    }
 
     public void addExpression(Expr expression) {
         this.expressions.add(expression);

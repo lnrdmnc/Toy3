@@ -1,4 +1,4 @@
-/*
+
 package node;
 
 import node.defdecl.*;
@@ -48,4 +48,3 @@ public interface Visitor<T> {
     T visitReturnOp(ReturnStat returnOp);
 
 }
-*/

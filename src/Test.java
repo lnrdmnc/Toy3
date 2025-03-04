@@ -38,5 +38,6 @@ public class Test {
         Lexer lexer = new Lexer(new FileReader(inputPath.toString()));
         Parser p = new Parser(lexer);
         ProgramOp pr = (ProgramOp) p.debug_parse().value;
+
     }
 }

@@ -9,7 +9,8 @@ public enum Type {
     DOUBLE,
     STRING,
     CHAR,
-    NULL;
+    NULL,
+    NOTYPE;
 
     public static Type getTypeFromExpr(Expr constant){
         if(constant instanceof CharNode){
@@ -26,5 +27,5 @@ public enum Type {
             return Type.BOOLEAN;
         }
         return null;
-}
+    }
 }
