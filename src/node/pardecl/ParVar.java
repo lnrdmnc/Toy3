@@ -1,12 +1,33 @@
 package node.pardecl;
 
 import node.ASTNode;
+import node.Type;
 import node.expr.constant.Identifier;
+import visitor.utils.TabellaDeiSimboli;
 
 public class ParVar extends ASTNode {
 
     private boolean isReference; // se vera passo per riferimento.
     private Identifier id;
+
+    private TabellaDeiSimboli tabellaDeiSimboli;
+    private Type type;
+
+    public TabellaDeiSimboli getTabellaDeiSimboli() {
+        return tabellaDeiSimboli;
+    }
+
+    public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
+        this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public ParVar(boolean isReference, Identifier id) {
         this.isReference = isReference;

@@ -13,6 +13,19 @@ public class VarInit extends ASTNode {
     private Expr initValue;  // Valore iniziale (opzionale)
     private TabellaDeiSimboli tabellaDeiSimboli;
     private Type returnType;
+
+    public TabellaDeiSimboli getTabellaDeiSimboli() {
+        return tabellaDeiSimboli;
+    }
+
+    public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
+        this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
+    public Type getReturnType() {
+        return returnType;
+    }
+
     public VarInit(Object id, Object initValue) {
         this.id = (Identifier) id;
         this.initValue = (Expr) initValue;

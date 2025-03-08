@@ -5,6 +5,7 @@ import node.ASTNode;
 import node.Type;
 import node.defdecl.Decl;
 import node.expr.Expr;
+import visitor.utils.TabellaDeiSimboli;
 
 public class VarDecl extends ASTNode implements Decl {
 
@@ -12,6 +13,24 @@ public class VarDecl extends ASTNode implements Decl {
     private ArrayList<VarInit> variables; // Lista di variabili (es. "x | y = 5")
     private Type type;     // Tipo (es. "int", "bool")
     private Expr costant;
+    private TabellaDeiSimboli tabellaDeiSimboli;
+    private Type type;
+
+    public TabellaDeiSimboli getTabellaDeiSimboli() {
+        return tabellaDeiSimboli;
+    }
+
+    public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
+        this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public VarDecl(Object variables, Object typeOrConstant) {
         this.variables = (ArrayList<VarInit>) variables;

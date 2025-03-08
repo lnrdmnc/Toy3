@@ -2,8 +2,10 @@ package node.stat;
 
 import node.ASTNode;
 import node.Stat;
+import node.Type;
 import node.expr.Expr;
 import node.expr.constant.Identifier;
+import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,24 @@ public class AssignOp extends ASTNode implements Stat {
 
     private ArrayList<Identifier> variables; // Lista di variabili
     private ArrayList<Expr> expressions; // Lista di espressioni
+    private TabellaDeiSimboli tabellaDeiSimboli;
+    private Type type;
+
+    public TabellaDeiSimboli getTabellaDeiSimboli() {
+        return tabellaDeiSimboli;
+    }
+
+    public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
+        this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public AssignOp(ArrayList<Identifier> variables, ArrayList<Expr> expressions) {
         this.variables = variables;

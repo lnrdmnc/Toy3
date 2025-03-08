@@ -2,7 +2,9 @@ package node.body;
 
 import node.ASTNode;
 import node.Stat;
+import node.Type;
 import node.vardecl.VarDecl;
+import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 
@@ -10,6 +12,25 @@ public class BodyOp extends ASTNode {
 
     private ArrayList<VarDecl> dichiarazioni;
     private ArrayList<Stat> statements;
+
+    private TabellaDeiSimboli tabellaDeiSimboli;
+    private Type type;
+
+    public TabellaDeiSimboli getTabellaDeiSimboli() {
+        return tabellaDeiSimboli;
+    }
+
+    public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
+        this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public BodyOp(ArrayList<VarDecl> dichiarazioni, ArrayList<Stat> statements) {
         this.dichiarazioni = dichiarazioni;

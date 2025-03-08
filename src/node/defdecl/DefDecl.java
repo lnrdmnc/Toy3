@@ -6,6 +6,7 @@ import node.body.BodyOp;
 import node.expr.constant.Identifier;
 import node.pardecl.ParDecl;
 import node.pardecl.ParVar;
+import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,15 @@ public class DefDecl extends ASTNode implements Decl {
     private Type type;
     private BodyOp body;
     private ArrayList<ParDecl> list;
+    private TabellaDeiSimboli tabellaDeiSimboli;
 
+    public TabellaDeiSimboli getTabellaDeiSimboli() {
+        return tabellaDeiSimboli;
+    }
+
+    public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
+        this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
 
     // Costruttore con lista di parametri
     // Funzione  con parametri

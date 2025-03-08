@@ -14,6 +14,14 @@ public class UnaryOp extends ASTNode implements Expr  {
     private Expr operand;    // Operando su cui agisce l'operatore
     private Type type; // tipo
 
+    public TabellaDeiSimboli getTabellaDeiSimboli() {
+        return tabellaDeiSimboli;
+    }
+
+    public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
+        this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
     public UnaryOp(String operator, Expr operand) {
         this.operator = operator;
         this.operand = operand;

@@ -1,6 +1,7 @@
 package node.stat;
 import node.ASTNode;
 import node.Stat;
+import node.Type;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
@@ -11,7 +12,15 @@ public class WriteOp extends ASTNode  implements Stat {
     private ArrayList<Expr> expressions; // Lista di espressioni da stampare
     private  boolean newLine; // Indica se si usa write o writeln
     private TabellaDeiSimboli tabella;
+    private Type type;
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     // Costruttore principale
     public WriteOp(ArrayList<Expr> expressions, boolean newLine) {
