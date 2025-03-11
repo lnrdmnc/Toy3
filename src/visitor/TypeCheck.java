@@ -289,4 +289,43 @@ public class TypeCheck implements Visitor {
         return null;
     }
 
+
+    public Type OpTypeChecker(BinaryOp operation) {
+        Expr leftOperand = operation.getLeft();
+        Expr rightOperand = operation.getRight();
+        String operator = operation.getOperator();
+
+        boolean arithOpCheck = operator.equals("PLUS") || operator.equals("MINUS") || operator.equals("TIMES") || operator.equals("DIV");
+        boolean relop = operator.equals("LT") || operator.equals("LE") || operator.equals("GT") || operator.equals("GE") || operator.equals("EQ") || operator.equals("NE");
+        boolean booleanCheck = operator.equals("AND") || operator.equals("OR");
+
+        if (arithOpCheck && leftOperand.getType() == Type.INTEGER && rightOperand.getType() == Type.INTEGER) {
+            return Type.INTEGER;
+        } else if (arithOpCheck && leftOperand.getType() == Type.DOUBLE && rightOperand.getType() == Type.DOUBLE) {
+            return Type.DOUBLE;
+        } else if (arithOpCheck && leftOperand.getType() == Type.INTEGER && rightOperand.getType() == Type.DOUBLE) {
+            return Type.DOUBLE;
+        } else if (arithOpCheck && leftOperand.getType() == Type.DOUBLE && rightOperand.getType() == Type.INTEGER) {
+            return Type.DOUBLE;
+        } else if (booleanCheck && leftOperand.getType() == Type.BOOLEAN && rightOperand.getType() == Type.BOOLEAN) {
+            return Type.BOOLEAN;
+        } else if (relop && leftOperand.getType() == Type.INTEGER && rightOperand.getType() == Type.INTEGER) {
+            return Type.BOOLEAN;
+        } else if (relop && leftOperand.getType() == Type.DOUBLE && rightOperand.getType() == Type.INTEGER) {
+            return Type.BOOLEAN;
+        } else if (relop && leftOperand.getType() == Type.INTEGER && rightOperand.getType() == Type.DOUBLE) {
+            return Type.BOOLEAN;
+        } else if (relop && leftOperand.getType() == Type.DOUBLE && rightOperand.getType() == Type.DOUBLE) {
+            return Type.BOOLEAN;
+        } else if (operator.equals("PLUS") && (leftOperand.getType() == Type.STRING || rightOperand.getType() == Type.STRING)) {
+            return Type.STRING;
+        } else if (operator.equals("NE") && (leftOperand.getType() == Type.STRING && rightOperand.getType() == Type.STRING)) {
+            return Type.BOOLEAN;
+        } else if (operator.equals("EQ") && (leftOperand.getType() == Type.STRING && rightOperand.getType() == Type.STRING)) {
+            return Type.BOOLEAN;
+        } else {
+            throw new RuntimeException("The assignment does not have a match in the table! " + leftOperand + " " + operation.getOperator() + " " + rightOperand);
+        }
+    }
+
 }

@@ -19,18 +19,23 @@ public class FirmaVariabile implements Firma, Cloneable {
 
     public FirmaVariabile(Expr constant) {
         if(constant instanceof CharNode){
-            this.type = Type.CHAR;    }
+            this.type = Type.CHAR;
+        }
         else if(constant instanceof DoubleNode){
-            this.type = Type.DOUBLE;    }
+            this.type = Type.DOUBLE;
+        }
         else if(constant instanceof FalseNode){
-            this.type = Type.BOOLEAN;    }
+            this.type = Type.BOOLEAN;
+        }
         else if(constant instanceof IntegerNode){
             this.type = Type.INTEGER;
         }
         else if(constant instanceof StringNode){
-            this.type = Type.STRING;    }
+            this.type = Type.STRING;
+        }
         else if(constant instanceof TrueNode){
-            this.type = Type.BOOLEAN;    }
+            this.type = Type.BOOLEAN;
+        }
     }
 
     @Override
@@ -47,7 +52,6 @@ public class FirmaVariabile implements Firma, Cloneable {
         if (this.type != null) {
             clone.type = this.type; // Assumiamo che `Type` implementi `Cloneable`
         }
-
         return clone;
     }
 
