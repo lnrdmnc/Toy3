@@ -156,22 +156,20 @@ public class TypeCheck implements Visitor {
             funCall.setType(Type.NOTYPE);
         }
 
-        funCall.setInputTypes(type.getInputTypes());
+        funCall.setType(type.getType());
 
         return funCall.getType();
     }
 
     @Override
     public Object visitIdentifier(Identifier identifier) {
-
         Stack<TabellaDeiSimboli> clona =  typeenv.clone();
-        Type type = lookupVariable(identifier, cloned);
+        Type type = lookupVariable(identifier, clona);
         if (type == null) {
             throw new RuntimeException("Variable is not declared.");
         }
         identifier.setType(type);
         return identifier.getType();
-        return null;
     }
 
     @Override

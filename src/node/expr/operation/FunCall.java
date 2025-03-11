@@ -16,6 +16,8 @@ public class FunCall extends ASTNode implements Expr, Stat {
     private TabellaDeiSimboli tabellaDeiSimboli;
     private Type type;
 
+
+
     public TabellaDeiSimboli getTabellaDeiSimboli() {
         return tabellaDeiSimboli;
     }

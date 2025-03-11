@@ -8,57 +8,78 @@ import java.util.ArrayList;
 
 public class TipoFunzione implements Firma, Cloneable{
 
-    public Type type;
-    @Override
+    public ArrayList<Type> inputType;
+    public Type outputType;
+    public Boolean reference;
+
+    public TipoFunzione(){
+
+    }
+
+    public TipoFunzione (ArrayList<Type> inputType, Type outputType) {
+        this.inputType = inputType;
+        this.outputType = outputType;
+    }
+
+    public TipoFunzione (ArrayList<Type> inputType, Type outputType, Boolean reference) {
+        this.inputType = inputType;
+        this.outputType = outputType;
+        this.reference = reference;
+    }
+
+
+    public TipoFunzione(Type outputType) {
+        this.outputType = outputType;
+    }
 
     public Firma clone() {
         TipoFunzione cloned = new TipoFunzione();
-        if(this.type!=null){
-            cloned.type=this.type;
+        if(this.inputType !=null){
+            cloned.inputType= new ArrayList<>();
         }
-        return cloned;
-    }
+        for(Type type : this.inputType){
+            cloned.inputType.add(type);
+        }
 
-    public TipoFunzione(Expr constant) {
-        if(constant instanceof CharNode){
-            this.type = Type.CHAR;
-        } else if(constant instanceof DoubleNode){
-            this.type = Type.DOUBLE;
-        } else if(constant instanceof FalseNode){
-            this.type = Type.BOOLEAN;
-        } else if(constant instanceof IntegerNode){
-            this.type = Type.INTEGER;
-        } else if(constant instanceof StringNode){
-            this.type = Type.STRING;
-        } else if(constant instanceof TrueNode){
-            this.type = Type.BOOLEAN;
+        if(this.outputType != null){
+            cloned.outputType = this.outputType;
         }
+
+        return cloned;
     }
 
     @Override
     public Type getType() {
-        return type;
+        return this.outputType;
+    }
+
+    public void setInputType(ArrayList<Type> inputType) {
+        this.inputType = inputType;
+    }
+
+    public ArrayList<Type> getInputType() {
+        return inputType;
     }
 
     @Override
     public ArrayList<Type> getMultipleTypes() {
-        return null;
+        return inputType;
     }
 
-    public TipoFunzione() {
-
+    public Type getOutputType() {
+        return outputType;
     }
 
-    public TipoFunzione(Type type) {
-        this.type=type;
+    public void setOutputType(Type outputType) {
+        this.outputType = outputType;
     }
 
-    public Boolean comparaTipi(Type nuovoTipo){
-
-        Boolean result = false;
-        if(this.type == nuovoTipo){
-            result = true;
-        }
-        return result;
+    public Boolean getReference() {
+        return reference;
     }
+
+    public void setReference(Boolean reference) {
+        this.reference = reference;
+    }
+
 }
