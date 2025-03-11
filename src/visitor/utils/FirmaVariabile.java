@@ -64,4 +64,10 @@ public class FirmaVariabile implements Firma, Cloneable {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "FirmaVariabile{" +
+                "type=" + type +
+                '}';
+    }
 }

@@ -82,4 +82,12 @@ public class TipoFunzione implements Firma, Cloneable{
         this.reference = reference;
     }
 
+    @Override
+    public String toString() {
+        return "TipoFunzione{" +
+                "inputType=" + inputType +
+                ", outputType=" + outputType +
+                ", reference=" + reference +
+                '}';
+    }
 }
