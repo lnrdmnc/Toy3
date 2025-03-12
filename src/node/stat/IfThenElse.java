@@ -3,15 +3,16 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.body.BodyOp;
 import node.expr.Expr;
 import org.codehaus.plexus.util.FastMap;
 import visitor.utils.TabellaDeiSimboli;
 
 public class IfThenElse extends ASTNode  implements Stat {
 
-    private ASTNode elseStatement;
+    private BodyOp elseStatement;
     private Expr espressione;
-    private ASTNode thenStatement;
+    private BodyOp ifthenStatement;
     private Type type;
     private TabellaDeiSimboli tabellaDeiSimboli;;
 
@@ -31,30 +32,44 @@ public class IfThenElse extends ASTNode  implements Stat {
         this.tabellaDeiSimboli = tabellaDeiSimboli;
     }
 
-    public IfThenElse(Expr espressione, ASTNode then, ASTNode elseStatement) {
+    public IfThenElse(Expr espressione, BodyOp ifthenStatement, BodyOp elseStatement) {
         this.elseStatement = elseStatement;
-        this.thenStatement = then;
+        this.ifthenStatement = ifthenStatement;
         this.espressione = espressione;
     }
 
-    public ASTNode getElseStatement() {
+    public BodyOp getElseStatement() {
         return elseStatement;
+    }
+
+    public void setElseStatement(BodyOp elseStatement) {
+        this.elseStatement = elseStatement;
+    }
+
+    public void setEspressione(Expr espressione) {
+        this.espressione = espressione;
+    }
+
+    public BodyOp getIfthenStatement() {
+        return ifthenStatement;
+    }
+
+    public void setIfthenStatement(BodyOp ifthenStatement) {
+        this.ifthenStatement = ifthenStatement;
     }
 
     public Expr getEspressione() {
         return espressione;
     }
 
-    public ASTNode getThenStatement() {
-        return thenStatement;
-    }
+
 
     @Override
     public String toString() {
         return "IfThenElse{" +
-                "elseStatement=" + elseStatement +
-                ", espressione=" + espressione +
-                ", thenStatement=" + thenStatement +
+                "espressione=" + espressione +
+                ", thenStatement=" + ifthenStatement +
+                ", elseStatement=" + elseStatement +
                 '}';
     }
 
