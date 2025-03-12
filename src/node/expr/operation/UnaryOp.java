@@ -11,7 +11,7 @@ public class UnaryOp extends ASTNode implements Expr  {
 
     private TabellaDeiSimboli tabellaDeiSimboli;
     private String operator; // Operatore unario (es: "-" o "not")
-    private Expr operand;    // Operando su cui agisce l'operatore
+    private Expr operand;    // Operando su cui agisce l'operatore child
     private Type type; // tipo
 
     public TabellaDeiSimboli getTabellaDeiSimboli() {

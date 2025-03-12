@@ -5,6 +5,7 @@ import node.ASTNode;
 import node.Stat;
 import node.Type;
 import node.Visitor;
+import node.body.BodyOp;
 import node.defdecl.Decl;
 import node.defdecl.DefDecl;
 import node.expr.Expr;
@@ -12,10 +13,12 @@ import node.expr.constant.*;
 import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
 import node.expr.operation.UnaryOp;
+import node.pardecl.ParDecl;
 import node.program.ProgramOp;
 import node.stat.*;
 import node.vardecl.VarDecl;
 import node.vardecl.VarInit;
+import org.w3c.dom.Node;
 import visitor.utils.TabellaDeiSimboli;
 import visitor.utils.TipoFunzione;
 
@@ -70,11 +73,86 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitDefDecl(DefDecl defDecl) {
+        Type type = defDecl.getType();
+        BodyOp bodyOp;
+        current_table = defDecl.getBody().getTabellaDeiSimboli();
+        typeenv.add(defDecl.getTabellaDeiSimboli());
+        Node node;
+
+        if (defDecl.getList() != null) {
+            for (ParDecl decl : defDecl.getList()) {
+                decl.accept(this);
+            }
+        }
+
+        if (defDecl.getType() == null) { // check for return statement in proc
+            for (Stat statement : defDecl.getBody().getStatements()) {
+                if (statement instanceof ReturnStat) throw new RuntimeException("A proc cannot have a return statement!");
+            }
+        } else { // checks for function
+            boolean error = true;
+            for (Stat statement : defDecl.getBody().getStatements()) {
+                if (statement instanceof ReturnStat) {
+                    error = false;
+                    Type tipoTemporaneo = null;
+                    ReturnStat returnStatement = (ReturnStat) statement;
+                    if (returnStatement.getType() == null) {
+                        tipoTemporaneo = (Type) returnStatement.getExpr().accept(this);
+                    }
+                    if (tipoTemporaneo != defDecl.getType()) {
+                        throw new RuntimeException("The return type for " + defDecl.getId().getName() + " is incorrect");
+                    }
+                }
+            }
+            if (error) {
+                throw new RuntimeException("Missing return statement" + " " + defDecl.getId().getName());
+            }
+        }
+
+        bodyOp = defDecl.getBody();
+
+        if (bodyOp.getDichiarazioni() != null) {
+            for (VarDecl decls : bodyOp.getDichiarazioni()) {
+                decls.accept(this);
+            }
+        }
+
+        if (bodyOp.getStatements() != null) {
+            for (Stat statement : bodyOp.getStatements()) {
+                Type typeToCheck = (Type) statement.accept(this);
+                if (typeToCheck == null) {
+                    throw new RuntimeException("The current statement " + statement + " is wrong.");
+                }
+            }
+        }
+
+        bodyOp.setType(Type.NOTYPE);
+        typeenv.pop();
         return null;
     }
 
     @Override
     public Object visitVarDecl(VarDecl varDecl) {
+        ArrayList<VarInit> variabiliDichiarate = (ArrayList<VarInit>) varDecl.getVariables();
+        if(variabiliDichiarate != null) {
+            for(VarInit var : variabiliDichiarate) {
+                Type TipoVariabiliDichiarate = var.accept(this);
+                if(TipoVariabiliDichiarate != varDecl.getType()) {
+                    throw new RuntimeException("The variable " + var.getId().getName()+  "' initialized with: " + var.getInitValue() + " does not match the declaration type: " + varDecl.getType());
+                }else
+                // Se il tipo non è dichiarato, lo determina dalla costante di inizializzazione
+                {
+                    Type iniConstType = Type.getTypeFromExpr(varDecl.getCostant());
+                    if(variabiliDichiarate!= iniConstType){
+                        throw new RuntimeException("The variable " + var.getId().getName() + " initialized with: " + var.getInitValue() + " does not match the declaration type: " + varDecl.getType());
+                    }
+                }
+            }
+        }
+        Expr constant= varDecl.getCostant();
+        if(constant!=null){
+            constant.accept(this);
+        }
         return null;
     }
 
@@ -104,48 +182,48 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitUnaryOp(UnaryOp unaryOp) {
-
-       Expr operand = unaryOp.getOperand();
-       operand.accept(this);
-       unaryOp.setType(this.unaryChecker(unaryOp));
-       return unaryOp.getType();
+        Expr operand = unaryOp.getOperand();
+        operand.accept(this);
+        unaryOp.setType(this.unaryChecker(unaryOp));
+        return unaryOp.getType();
 
     }
 
+
+
     @Override
     public Object visitFunCall(FunCall funCall) {
-        Stack<TabellaDeiSimboli> cloned = (Stack<TabellaDeiSimboli>) typeEnvironment.clone();
+        Stack<TabellaDeiSimboli> cloned = (Stack<TabellaDeiSimboli>) typeenv.clone();
         TipoFunzione type = lookupFunction(funCall.getId(), cloned);
-
-        ArrayList<Boolean> reference = type.
+        ArrayList<Boolean> reference = type.getReference();
 
         if (type == null) {
             throw new RuntimeException("The function or procedure " + funCall.getId().getName() + " has been not declared");
         }
 
-        if (type.getInputTypes() != null) {
-            int numberOfFormalParameters = type.getInputTypes().size();
-            int numberOfActualParameters = funCall.getExpressions().size();
+        if (type.getInputType() != null) {
+            int numberOfFormalParameters = type.getInputType().size();
+            int numberOfActualParameters = funCall.getArguments().size();
 
             if (numberOfActualParameters != numberOfFormalParameters) {
                 throw new RuntimeException("The function or procedure " + funCall.getId().getName() + " the actual parameters does not match to formal parameters.");
             }
 
             for (int i = 0; i < numberOfActualParameters; i++) {
-                Type actualParameters = (Type) funCall.getExpressions().get(i).accept(this);
-                Type formalParameters = type.getInputTypes().get(i);
+                Type actualParameters = (Type) funCall.getArguments().get(i).accept(this);
+                Type formalParameters = type.getInputType().get(i);
 
                 if (actualParameters != formalParameters) {
-                    throw new RuntimeException("The parameters " + funCall.getExpressions().get(i) + "( position " + i + "; type " + funCall.getExpressions().get(i).getType() + ") has a different number actual type from the formal one");
+                    throw new RuntimeException("The parameters " + funCall.getArguments().get(i) + "( position " + i + "; type " + funCall.getExpressions().get(i).getType() + ") has a different number actual type from the formal one");
                 }
             }
 
             for (int i = 0; i < numberOfActualParameters; i++) {
-                boolean hasRef = references.get(i);
-                Expr expr = funCall.getExpressions().get(i);
+                boolean hasRef = reference.get(i);
+                Expr expr = funCall.getArguments().get(i);
 
                 if (hasRef && !(expr instanceof Identifier)) {
-                    throw new RuntimeException("The referenced parameters " + funCall.getExpressions().get(i) + "( position " + i + "; type " + funCall.getExpressions().get(i).getType() + ") is not available");
+                    throw new RuntimeException("The referenced parameters " + funCall.getArguments().get(i) + "( position " + i + "; type " + funCall.getExpressions().get(i).getType() + ") is not available");
                 }
             }
         }
@@ -163,7 +241,7 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitIdentifier(Identifier identifier) {
-        Stack<TabellaDeiSimboli> clona =  typeenv.clone();
+        Stack<TabellaDeiSimboli> clona = typeenv.clone();
         Type type = lookupVariable(identifier, clona);
         if (type == null) {
             throw new RuntimeException("Variable is not declared.");
@@ -174,34 +252,58 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitIdentifier(CharNode charNode) {
-
-
-        return null;
+        charNode.setType(Type.CHAR);
+        return charNode.getType();
     }
 
     @Override
     public Object visitIdentifier(DoubleNode doubleNode) {
-        return null;
+        doubleNode.setType(Type.DOUBLE);
+        return doubleNode.getType();
     }
 
     @Override
     public Object visitIdentifier(IntegerNode integerNode) {
-        return null;
+        integerNode.setType(Type.INTEGER);
+        return integerNode.getType();
     }
 
     @Override
     public Object visitIdentifier(StringNode stringNode) {
-        return null;
+        stringNode.setType(Type.STRING);
+        return stringNode.getType();
     }
 
     @Override
     public Object visitIdentifier(TrueNode trueNode) {
-        return null;
+        trueNode.setType(Type.BOOLEAN);
+        return trueNode.getType();
     }
 
     @Override
     public Object visitAssignOp(AssignOp assignOp) {
-        return null;
+        ArrayList<Identifier> variabiliAssegnate= assignOp.getVariables();
+        for (Identifier id: variabiliAssegnate){
+            id.accept(this);
+        }
+
+        ArrayList<Expr> expressions= ArrayList<Expr> assignOp.getExpressions();
+        for(Expr expr: expressions){
+            expr.accept(this);
+        }
+
+        for(int i=0; i<variabiliAssegnate.size(); i++){
+            Type tipoVariabiliAssegnate= variabiliAssegnate.get(i).getType();
+            Type tipoEspressioni= expressions.get(i).getType();
+            if(tipoVariabiliAssegnate== Type.DOUBLE && tipoEspressioni== Type.INTEGER){
+                System.out.println("ok  Type check assign op");
+            } else if(tipoVariabiliAssegnate!= tipoEspressioni){
+
+                throw new RuntimeException("The variable " + variabiliAssegnate.get(i).getName() + " is not compatible with the expression " + expressions.get(i) + ", are not the same.");
+            }
+        }
+        assignOp.setType(Type.NOTYPE);
+        return assignOp.getType();
     }
 
     @Override
@@ -223,7 +325,14 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitIfThen(IfThenNode ifThen) {
-        return null;
+        typeenv.add(ifThen.getTabellaDeiSimboli());
+        Expr expr = ifThen.getEspressione();
+        Type tipoExpr = (Type) expr.accept(this);
+        if (tipoExpr != Type.BOOLEAN) {
+            throw new RuntimeException("The expression in the if statement is not boolean, but is"+tipoExpr);
+        }
+        BodyOp body = ifThen.getBody();
+        return ifThen.getType();
     }
 
     @Override
@@ -244,13 +353,29 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitWhileOp(WhileOp whileOp) {
-        return null;
+
+        typeenv.add(whileOp.getTabellaDeiSimboli());
+        Expr expr =whileOp.getEspr();
+        Type tipoExpr= (Type) expr.accept(this);
+        if(tipoExpr!= Type.BOOLEAN){
+            throw new RuntimeException("The expression in the while statement is not boolean.");
+        }
+        BodyOp body= whileOp.getBody();
+        body.accept(this);
+
+        if(body.getType()!= Type.NOTYPE){
+            throw new RuntimeException("The body is not NOTYPE.");
+        }
+
+        whileOp.setType(Type.NOTYPE);
+        typeenv.pop();
+        return whileOp.getType();
     }
 
     @Override
     public Object visitReturnOp(ReturnStat returnOp) {
 
-        Expr result = returnOp.getResult();
+        Expr result = returnOp.getExpr();
         Type exprType = (Type) result.accept(this);
         returnOp.setType(Type.NOTYPE);
         return null;
@@ -289,6 +414,25 @@ public class TypeCheck implements Visitor {
         return null;
     }
 
+    public Type unaryChecker(UnaryOp node) {
+        Expr expression = node.getOperand();
+        String operator = node.getOperator();
+        boolean minusCheck = operator.equals("MINUS");
+        boolean notCheck = operator.equals("NOT");
+
+        if (minusCheck && expression.getType() == Type.INTEGER) {
+            return Type.INTEGER;
+        }
+
+        if (minusCheck && expression.getType() == Type.DOUBLE) {
+            return Type.DOUBLE;
+        }
+
+        if (notCheck && expression.getType() == Type.BOOLEAN) {
+            return Type.BOOLEAN;
+        }
+        return null;
+    }
 
     public Type OpTypeChecker(BinaryOp operation) {
         Expr leftOperand = operation.getLeft();

@@ -10,7 +10,7 @@ public class TipoFunzione implements Firma, Cloneable{
 
     public ArrayList<Type> inputType;
     public Type outputType;
-    public Boolean reference;
+    public ArrayList<Boolean> reference;
 
     public TipoFunzione(){
 
@@ -21,7 +21,7 @@ public class TipoFunzione implements Firma, Cloneable{
         this.outputType = outputType;
     }
 
-    public TipoFunzione (ArrayList<Type> inputType, Type outputType, Boolean reference) {
+    public TipoFunzione (ArrayList<Type> inputType, Type outputType, ArrayList<Boolean> reference) {
         this.inputType = inputType;
         this.outputType = outputType;
         this.reference = reference;
@@ -74,11 +74,11 @@ public class TipoFunzione implements Firma, Cloneable{
         this.outputType = outputType;
     }
 
-    public Boolean getReference() {
+    public ArrayList<Boolean> getReference() {
         return reference;
     }
 
-    public void setReference(Boolean reference) {
+    public void setReference(ArrayList<Boolean> reference) {
         this.reference = reference;
     }
 
