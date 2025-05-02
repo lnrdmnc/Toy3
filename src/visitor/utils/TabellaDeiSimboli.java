@@ -21,9 +21,11 @@ public class TabellaDeiSimboli {
         if(rigaLista.contains(riga)) {
 
             throw new RuntimeException("Riga già presente nella tabella dei simboli");
-            return;
+
         }
         this.rigaLista.add(riga);
+        return;
+
     }
 
     public TabellaDeiSimboli(ArrayList<RigaTabellaDeiSimboli> rigaLista, String nome) {
@@ -64,8 +66,8 @@ public class TabellaDeiSimboli {
                 '}';
     }
 
-    // non mi piace questo da cercare devo capire meglio il funzionamento
-    public boolean contains(Identifier nodo, String tipo) {
+
+    public RigaTabellaDeiSimboli getRiga(Identifier nodo, String tipo) {
         RigaTabellaDeiSimboli daCercare = new RigaTabellaDeiSimboli(nodo.getName(), tipo);
         if (rigaLista != null) {
             for (RigaTabellaDeiSimboli corrente : rigaLista) {
@@ -73,6 +75,22 @@ public class TabellaDeiSimboli {
             }
         }
         return false;
+    }
+
+    public TabellaDeiSimboli clone(){
+        TabellaDeiSimboli clone = new TabellaDeiSimboli(nome);
+        if(this.rigaLista!= null){
+            clone.rigaLista = new ArrayList<>();
+            for (RigaTabellaDeiSimboli riga : this.rigaLista) {
+            clone.rigaLista.add(riga.clone());
+            }
+        }
+
+        if(this.padre != null){
+            clone.padre = (TabellaDeiSimboli) this.padre.clone();
+        }
+        clone.nome= this.nome;
+        return clone;
     }
 
 

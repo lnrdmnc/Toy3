@@ -2,6 +2,8 @@ package node;
 
 import visitor.ScopeVisitor;
 
-public interface Stat {
+public interface Stat extends ASTNode
+{
+    Object accept(ScopeVisitor v);
 
 }

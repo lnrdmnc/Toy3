@@ -17,10 +17,7 @@ import node.program.ProgramOp;
 import node.stat.*;
 import node.vardecl.VarDecl;
 import node.vardecl.VarInit;
-import visitor.utils.Firma;
-import visitor.utils.FirmaVariabile;
-import visitor.utils.RigaTabellaDeiSimboli;
-import visitor.utils.TabellaDeiSimboli;
+import visitor.utils.*;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -65,7 +62,7 @@ public class ScopeVisitor implements Visitor {
                     inputTypes = null;
                 }
 
-                type = new FirmaVariabile(inputTypes, returnType, refList);
+                type = new TipoFunzione(inputTypes, returnType, refList);
                 RigaTabellaDeiSimboli riga = new RigaTabellaDeiSimboli(name, kind, type);
                 tabellaProgramma.aggiungiRiga(riga);
 
@@ -127,9 +124,9 @@ public class ScopeVisitor implements Visitor {
         programOp.setTabellaBegEnd(tabellaBeginEnd);
 
         // Visita le istruzioni
-        ArrayList<StatOp> statements = programOp.getStatements();
+        ArrayList<Stat> statements = programOp.getStatements();
         if (statements != null) {
-            for (StatOp stat : statements) {
+            for (Stat stat : statements) {
                 stat.accept(this);
             }
         }
@@ -194,8 +191,8 @@ public class ScopeVisitor implements Visitor {
         defDecl.setTabellaDeiSimboli(tabella);
 
         // Visita le istruzioni del corpo
-        ArrayList<StatOp> statements = body.getStatements();
-        for (StatOp stat : statements) {
+        ArrayList<Stat> statements = body.getStatements();
+        for (Stat stat : statements) {
             stat.accept(this);
         }
 
@@ -280,10 +277,10 @@ public class ScopeVisitor implements Visitor {
 
         for (int i = stackClone.size() - 1; i >= 0; i--) {
             TabellaDeiSimboli tabella = stackClone.get(i);
-            RigaTabellaDeiSimboli riga = tabella.getRigaLista(identifier, "variable");
+            RigaTabellaDeiSimboli riga = tabella.getRiga(identifier,"variable");
 
             if (riga != null) {
-                if (riga.isRef())) {
+                if (riga.isRef()) {
                     identifier.setRef(true);
                 }
             }

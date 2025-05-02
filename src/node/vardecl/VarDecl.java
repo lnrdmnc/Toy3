@@ -11,10 +11,10 @@ public class VarDecl extends ASTNode implements Decl {
 
 
     private ArrayList<VarInit> variables; // Lista di variabili (es. "x | y = 5")
-    private Type type;     // Tipo (es. "int", "bool")
+
     private Expr costant;
     private TabellaDeiSimboli tabellaDeiSimboli;
-    private Type type;
+    private Type type; // Tipo (es. "int", "bool")
 
     public TabellaDeiSimboli getTabellaDeiSimboli() {
         return tabellaDeiSimboli;
@@ -45,7 +45,7 @@ public class VarDecl extends ASTNode implements Decl {
 
     // Getter
     public List<VarInit> getVariables() { return variables; }
-    public Type getType() { return type; }
+
     public Expr getCostant() {
         return costant;
     }
