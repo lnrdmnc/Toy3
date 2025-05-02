@@ -3,6 +3,7 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
@@ -49,7 +50,7 @@ public class ReturnStat extends ASTNode implements Stat {
     }
 
     @Override
-    public void accept(ASTNode v) {
+    public void accept(Visitor v) {
         v.accept(this);
     }
 }

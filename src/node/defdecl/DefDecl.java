@@ -2,10 +2,10 @@ package node.defdecl;
 
 import node.ASTNode;
 import node.Type;
+import node.Visitor;
 import node.body.BodyOp;
 import node.expr.constant.Identifier;
 import node.pardecl.ParDecl;
-import node.pardecl.ParVar;
 import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
@@ -89,5 +89,10 @@ public class DefDecl extends ASTNode implements Decl {
     @Override
     public void accept(ASTNode v) {
         v.accept(this);
+    }
+
+    @Override
+    public Object accept(Visitor v) {
+        return v.visitDefDecl(this);
     }
 }

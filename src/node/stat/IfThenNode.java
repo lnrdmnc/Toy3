@@ -19,6 +19,18 @@ public class IfThenNode extends ASTNode implements Stat {
         this.body=body;
     }
 
+    public BodyOp getBody() {
+        return body;
+    }
+
+    public void setEspressione(Expr espressione) {
+        this.espressione = espressione;
+    }
+
+    public void setBody(BodyOp body) {
+        this.body = body;
+    }
+
     public TabellaDeiSimboli getTabellaDeiSimboli() {
         return tabellaDeiSimboli;
     }

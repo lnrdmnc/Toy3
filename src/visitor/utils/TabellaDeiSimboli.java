@@ -14,6 +14,17 @@ public class TabellaDeiSimboli {
         this.rigaLista = new ArrayList<>();
         this.nome = nome;
     }
+    
+    //forse serve fare un eccezzione?
+
+    public void aggiungiRiga(RigaTabellaDeiSimboli riga) throws RuntimeException{
+        if(rigaLista.contains(riga)) {
+
+            throw new RuntimeException("Riga già presente nella tabella dei simboli");
+            return;
+        }
+        this.rigaLista.add(riga);
+    }
 
     public TabellaDeiSimboli(ArrayList<RigaTabellaDeiSimboli> rigaLista, String nome) {
         this.rigaLista = rigaLista;

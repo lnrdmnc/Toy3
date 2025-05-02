@@ -53,8 +53,8 @@ public class ProgramOp extends ASTNode {
         this.statements = statements;
     }
 
-    private ArrayList<Decl> declarations;  // Corrisponde a "Decls" o
-    private ArrayList<VarDecl> varDeclarations; // Corrisponde a "VarDecls" i
+    private ArrayList<Decl> declarations;  // Corrisponde a "Decls" o dichiarazioni esterne
+    private ArrayList<VarDecl> varDeclarations; // Corrisponde a "VarDecls" i o dichiarazioni interne
     private ArrayList<Stat> statements; // Corrisponde a "Statements"
 
     public ProgramOp(ArrayList<Decl> declarations, ArrayList<VarDecl> varDeclarations, ArrayList<Stat> statements) {

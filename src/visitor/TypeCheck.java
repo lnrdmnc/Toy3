@@ -44,7 +44,7 @@ public class TypeCheck implements Visitor {
 
             typeenv.add(programOp.getTabellaBegEnd());
             if(typeenv.add(programOp.getTabellaBegEnd()) != null){
-                for(Decl decl : programOp.getVarDeclarations()))
+                for(Decl decl : programOp.getVarDeclarations())
                 {
                     ASTNode node = (ASTNode) decl;
                     ASTNode.accept(this);
@@ -161,9 +161,7 @@ public class TypeCheck implements Visitor {
        if(varInit.getInitValue() != null) {
            varInit.getInitValue().accept(this);
            varInit.setReturnType(varInit.getInitValue().getType());
-       }
-       else
-       {
+       }else{
            varInit.setReturnType(null);
        }
        return null;
@@ -177,7 +175,6 @@ public class TypeCheck implements Visitor {
         rightOperand.accept(this);
         binaryOp.setType(this.OpTypeChecker(binaryOp));
         return binaryOp.getType();
-        return null;
     }
 
     @Override
@@ -214,7 +211,7 @@ public class TypeCheck implements Visitor {
                 Type formalParameters = type.getInputType().get(i);
 
                 if (actualParameters != formalParameters) {
-                    throw new RuntimeException("The parameters " + funCall.getArguments().get(i) + "( position " + i + "; type " + funCall.getExpressions().get(i).getType() + ") has a different number actual type from the formal one");
+                    throw new RuntimeException("The parameters " + funCall.getArguments().get(i) + "( position " + i + "; type " + funCall.getArguments().get(i).getType() + ") has a different number actual type from the formal one");
                 }
             }
 
@@ -223,7 +220,7 @@ public class TypeCheck implements Visitor {
                 Expr expr = funCall.getArguments().get(i);
 
                 if (hasRef && !(expr instanceof Identifier)) {
-                    throw new RuntimeException("The referenced parameters " + funCall.getArguments().get(i) + "( position " + i + "; type " + funCall.getExpressions().get(i).getType() + ") is not available");
+                    throw new RuntimeException("The referenced parameters " + funCall.getArguments().get(i) + "( position " + i + "; type " + funCall.getArguments().get(i).getType() + ") is not available");
                 }
             }
         }
@@ -241,7 +238,7 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitIdentifier(Identifier identifier) {
-        Stack<TabellaDeiSimboli> clona = typeenv.clone();
+        Stack<TabellaDeiSimboli> clona = (Stack<TabellaDeiSimboli>) typeenv.clone();
         Type type = lookupVariable(identifier, clona);
         if (type == null) {
             throw new RuntimeException("Variable is not declared.");
@@ -308,19 +305,15 @@ public class TypeCheck implements Visitor {
 
     @Override
     public Object visitWriteOperationNode(WriteOp writeOp) {
-
-       TabellaDeiSimboli table = typeenv.peek();
+        TabellaDeiSimboli table = typeenv.peek();
         writeOp.setTabella(table);
-
         if (writeOp.getExpressions() != null) {
             for (Expr expressions : writeOp.getExpressions()) {
                 expressions.accept(this);
             }
         }
-
         writeOp.setType(Type.NOTYPE);
         return writeOp.getType();
-        return null;
     }
 
     @Override
@@ -332,12 +325,38 @@ public class TypeCheck implements Visitor {
             throw new RuntimeException("The expression in the if statement is not boolean, but is"+tipoExpr);
         }
         BodyOp body = ifThen.getBody();
+        Type bodyType = (Type) body.accept(this);
+        if (bodyType != Type.NOTYPE) {
+            throw new RuntimeException("The expression if then is not boolean, but is + " + bodyType);
+        }
+        typeenv.pop();
+        ifThen.setType(Type.NOTYPE);
         return ifThen.getType();
     }
 
     @Override
     public Object visitIfThenElse(IfThenElse ifThenElse) {
-        return null;
+        typeenv.add(ifThenElse.getTabellaDeiSimboli());
+        Expr expr = ifThenElse.getEspressione();
+        Type tipoExpr = (Type) expr.accept(this);
+        if (tipoExpr != Type.BOOLEAN) {
+            throw new RuntimeException("The expression in the if then else statement is not boolean, but is"+tipoExpr);
+        }
+        BodyOp bodyif = ifThenElse.getIfthenStatement();
+        Type bodyTypeIf = (Type) bodyif.accept(this);
+        if (bodyTypeIf != Type.NOTYPE) {
+            throw new RuntimeException("The expression if then is not boolean, but is + " + bodyType);
+        }
+        BodyOp bodyElse = ifThenElse.getIfthenStatement();
+        Type bodyTypeElse = (Type) bodyElse.accept(this);
+
+        if (bodyTypeElse != Type.NOTYPE) {
+            throw new RuntimeException("The expression if then is not boolean, but is + " + bodyType);
+        }
+
+        typeenv.pop();
+        ifThenElse.setType(Type.NOTYPE);
+        return ifThenElse.getType();
     }
 
     @Override

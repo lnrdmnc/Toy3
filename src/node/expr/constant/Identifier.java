@@ -10,6 +10,7 @@ public class Identifier extends ASTNode implements  Expr {
     private String name;
     private TabellaDeiSimboli tabellaDeiSimboli;
     private Type type;
+    private boolean ref;
 
     public TabellaDeiSimboli getTabellaDeiSimboli() {
         return tabellaDeiSimboli;
@@ -32,6 +33,18 @@ public class Identifier extends ASTNode implements  Expr {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isRef() {
+        return ref;
+    }
+
+    public void setRef(boolean ref) {
+        this.ref = ref;
     }
 
     @Override
