@@ -4,7 +4,7 @@ package node;
 
 public abstract class ASTNode {
 
-    public abstract void accept(Visitor v);
+    public abstract Object accept(Visitor v);
 
 }
 

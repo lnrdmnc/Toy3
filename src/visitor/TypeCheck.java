@@ -34,40 +34,37 @@ public class TypeCheck implements Visitor {
     @Override
     public Object visitProgramOp(ProgramOp programOp) {
         typeenv.add(programOp.getTabellaDeiSimboliProgram());
-        if(programOp.getDeclarations() != null){
-            for(Decl decl : programOp.getDeclarations())
-            {
-                ASTNode node = (ASTNode)decl;
-                ASTNode.accept(this);
+        if(programOp.getDeclarations() != null) {
+            for (Decl decl : programOp.getDeclarations()) {
+                ASTNode node = (ASTNode) decl;
+                node.accept(this);
 
-            }
-
-            typeenv.add(programOp.getTabellaBegEnd());
-            if(typeenv.add(programOp.getTabellaBegEnd()) != null){
-                for(Decl decl : programOp.getVarDeclarations())
-                {
-                    ASTNode node = (ASTNode) decl;
-                    ASTNode.accept(this);
-
-                }
-            }
-
-            if(typeenv.add(programOp.getStatements()!= null)) {
-                for(Stat stat : programOp.getStatements())
-                {
-                    ASTNode node = (ASTNode) stat;
-                    Type type = (Type) node.accept(this);
-                    if(type==null){
-                        throw new RuntimeException("Statements not valid.");
-                    }
-                    ASTNode.accept(this);
-                }
-                typeenv.pop();// BeginEndTable pop
-                typeenv.pop(); // Program pop
-                programOp.setType(Type.NOTYPE);
-                return null;
             }
         }
+
+            typeenv.add(programOp.getTabellaBegEnd());
+
+            if(programOp.getVarDeclarations() !=null) {
+                for (Decl decl : programOp.getVarDeclarations()) {
+                    ASTNode node = (ASTNode) decl;
+                    node.accept(this);
+                }
+            }
+
+            if(programOp.getStatements()!= null) {
+                for (Stat stat : programOp.getStatements()) {
+                    ASTNode node = (ASTNode) stat;
+                    Type type = (Type) node.accept(this);
+                    if (type == null) {
+                        throw new RuntimeException("Statements not valid.");
+                    }
+                }
+            }
+
+        typeenv.pop();// BeginEndTable pop
+        typeenv.pop(); // Program pop
+        programOp.setType(Type.NOTYPE);
+
         return null;
     }
 
@@ -136,14 +133,14 @@ public class TypeCheck implements Visitor {
         ArrayList<VarInit> variabiliDichiarate = (ArrayList<VarInit>) varDecl.getVariables();
         if(variabiliDichiarate != null) {
             for(VarInit var : variabiliDichiarate) {
-                Type TipoVariabiliDichiarate = var.accept(this);
+                Type TipoVariabiliDichiarate = (Type) var.accept(this);
                 if(TipoVariabiliDichiarate != varDecl.getType()) {
                     throw new RuntimeException("The variable " + var.getId().getName()+  "' initialized with: " + var.getInitValue() + " does not match the declaration type: " + varDecl.getType());
                 }else
                 // Se il tipo non è dichiarato, lo determina dalla costante di inizializzazione
                 {
                     Type iniConstType = Type.getTypeFromExpr(varDecl.getCostant());
-                    if(variabiliDichiarate!= iniConstType){
+                    if(TipoVariabiliDichiarate!= iniConstType){
                         throw new RuntimeException("The variable " + var.getId().getName() + " initialized with: " + var.getInitValue() + " does not match the declaration type: " + varDecl.getType());
                     }
                 }
@@ -284,7 +281,7 @@ public class TypeCheck implements Visitor {
             id.accept(this);
         }
 
-        ArrayList<Expr> expressions= ArrayList<Expr> assignOp.getExpressions();
+        ArrayList<Expr> expressions= (ArrayList<Expr>) assignOp.getExpressions();
         for(Expr expr: expressions){
             expr.accept(this);
         }
@@ -345,13 +342,13 @@ public class TypeCheck implements Visitor {
         BodyOp bodyif = ifThenElse.getIfthenStatement();
         Type bodyTypeIf = (Type) bodyif.accept(this);
         if (bodyTypeIf != Type.NOTYPE) {
-            throw new RuntimeException("The expression if then is not boolean, but is + " + bodyType);
+            throw new RuntimeException("The expression if then is not boolean, but is + " + bodyTypeIf);
         }
         BodyOp bodyElse = ifThenElse.getIfthenStatement();
         Type bodyTypeElse = (Type) bodyElse.accept(this);
 
         if (bodyTypeElse != Type.NOTYPE) {
-            throw new RuntimeException("The expression if then is not boolean, but is + " + bodyType);
+            throw new RuntimeException("The expression if then is not boolean, but is + " + bodyTypeElse);
         }
 
         typeenv.pop();
@@ -400,19 +397,6 @@ public class TypeCheck implements Visitor {
         return null;
     }
 
-
-    public Type lookupVariable (Identifier idNode, Stack<TabellaDeiSimboli> typeEnvironment) {
-        Stack<TabellaDeiSimboli> clonedTypeEnvironment = clonaTypeEnvironment(typeEnvironment);
-        if (typeEnvironment != null) {
-            for (TabellaDeiSimboli tabellaDeiSimboli : clonedTypeEnvironment) {
-                if (tabellaDeiSimboli.contains(idNode, "variable")) {
-                    return tabellaDeiSimboli.getRigaLista(idNode, "variable").getFirm().getType();
-                }
-            }
-        }
-        return null;
-    }
-
     public Stack<TabellaDeiSimboli> clonaTypeEnvironment(Stack<TabellaDeiSimboli> environment) {
         Stack<TabellaDeiSimboli> clone = new Stack<>();
         for (TabellaDeiSimboli current: environment) {
@@ -421,13 +405,25 @@ public class TypeCheck implements Visitor {
         return clone;
     }
 
-    public TipoFunzione lookupFunction(Identifier idNode, Stack<TabellaDeiSimboli> typeEnvironment) {
+    public Type lookupVariable (Identifier inode, Stack<TabellaDeiSimboli> typeEnvironment) {
+        Stack<TabellaDeiSimboli> clonedTypeEnvironment = clonaTypeEnvironment(typeEnvironment);
+        if (typeEnvironment != null) {
+            for (TabellaDeiSimboli tabellaDeiSimboli : clonedTypeEnvironment) {
+                if (tabellaDeiSimboli.contains(inode, "variable")) {
+                    return tabellaDeiSimboli.getRiga(inode, "variable").getFirma().getType();
+                }
+            }
+        }
+        return null;
+    }
+
+    public TipoFunzione lookupFunction(Identifier node, Stack<TabellaDeiSimboli> typeEnvironment) {
         Stack<TabellaDeiSimboli> clonedTypeEnvironment = clonaTypeEnvironment(typeEnvironment);
         for (TabellaDeiSimboli tab : clonedTypeEnvironment) {
-            if (tab.contains(idNode, "function")) {
-                return (TipoFunzione) tab.getRigaLista(idNode, "function").getFirm();
-            } else if (tab.contains(idNode, "procedure")) {
-                return (TipoFunzione) tab.getRigaLista(idNode, "procedure").getFirm();
+            if (tab.contains(node, "function")) {
+                return (TipoFunzione) tab.getRiga(node, "function").getFirma();
+            } else if (tab.contains(node, "procedure")) {
+                return (TipoFunzione) tab.getRiga(node, "procedure").getFirma();
             }
         }
         return null;

@@ -71,10 +71,12 @@ public class TabellaDeiSimboli {
         RigaTabellaDeiSimboli daCercare = new RigaTabellaDeiSimboli(nodo.getName(), tipo);
         if (rigaLista != null) {
             for (RigaTabellaDeiSimboli corrente : rigaLista) {
-                if (corrente.equals(daCercare)) return true;
+                if (corrente.equals(daCercare)){
+                    return corrente;
+                }
             }
         }
-        return false;
+        return null;
     }
 
     public TabellaDeiSimboli clone(){
@@ -91,6 +93,16 @@ public class TabellaDeiSimboli {
         }
         clone.nome= this.nome;
         return clone;
+    }
+
+    public boolean contains(Identifier node, String tipo){
+        RigaTabellaDeiSimboli daCercare = new RigaTabellaDeiSimboli(node.getName(), tipo);
+        if (rigaLista != null) {
+            for (RigaTabellaDeiSimboli corrente : rigaLista) {
+                if (corrente.equals(daCercare)) return true;
+            }
+        }
+        return false;
     }
 
 

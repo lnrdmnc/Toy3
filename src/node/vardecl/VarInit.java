@@ -54,8 +54,8 @@ public class VarInit extends ASTNode {
     }
 
     @Override
-    public void accept(Visitor v) {
-        v.visitVarInit(this);
+    public Object accept(Visitor v) {
+       return v.visitVarInit(this);
     }
 }
 
