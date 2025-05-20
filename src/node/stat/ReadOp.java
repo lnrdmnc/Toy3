@@ -3,12 +3,14 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.expr.constant.Identifier;
+import visitor.ScopeVisitor;
 import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 
-public class ReadOp extends ASTNode implements Stat {
+public class ReadOp implements Stat {
 
     private ArrayList<Identifier> list;
 
@@ -59,7 +61,12 @@ public class ReadOp extends ASTNode implements Stat {
     }
 
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(ScopeVisitor v) {
+        return null;
+    }
+
+    @Override
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

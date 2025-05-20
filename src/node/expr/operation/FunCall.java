@@ -3,13 +3,14 @@ package node.expr.operation;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.expr.Expr;
 import node.expr.constant.Identifier;
 import visitor.utils.TabellaDeiSimboli;
 
 import java.util.List;
 
-public class FunCall extends ASTNode implements Expr, Stat {
+public class FunCall implements Expr, Stat {
     private String functionName;      // Nome della funzione
     private List<Expr> arguments;    // Argomenti della funzione
     private Identifier id;
@@ -24,6 +25,11 @@ public class FunCall extends ASTNode implements Expr, Stat {
 
     public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
         this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 
     public Type getType() {
@@ -62,8 +68,5 @@ public class FunCall extends ASTNode implements Expr, Stat {
         return id;
     }
 
-    @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
-    }
+
 }

@@ -3,11 +3,13 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.body.BodyOp;
 import node.expr.Expr;
+import visitor.ScopeVisitor;
 import visitor.utils.TabellaDeiSimboli;
 
-public class WhileOp extends ASTNode implements  Stat {
+public class WhileOp implements  Stat {
 
     private Type type;
     private TabellaDeiSimboli tabellaDeiSimboli;
@@ -43,8 +45,9 @@ public class WhileOp extends ASTNode implements  Stat {
         this.tabellaDeiSimboli = tabellaDeiSimboli;
     }
 
+
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

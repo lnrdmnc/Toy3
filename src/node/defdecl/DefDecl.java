@@ -10,7 +10,7 @@ import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 
-public class DefDecl extends ASTNode implements Decl {
+public class DefDecl implements Decl {
 
     private Identifier id;
     private Type type;
@@ -86,13 +86,10 @@ public class DefDecl extends ASTNode implements Decl {
                 '}';
     }
 
-    @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
-    }
+
 
     @Override
     public Object accept(Visitor v) {
-        return v.visitDefDecl(this);
+        return v.visit(this);
     }
 }

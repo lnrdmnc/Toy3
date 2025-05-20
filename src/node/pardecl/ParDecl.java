@@ -53,7 +53,7 @@ public class ParDecl extends ASTNode {
     }
 
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

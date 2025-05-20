@@ -2,12 +2,13 @@ package node.expr.constant;
 
 import node.ASTNode;
 import node.Type;
+import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
 import java.lang.String;
 
-public class FalseNode extends ASTNode implements Expr {
+public class FalseNode implements Expr {
 
     private boolean costant;
     private TabellaDeiSimboli tabellaDeiSimboli;
@@ -19,6 +20,12 @@ public class FalseNode extends ASTNode implements Expr {
 
     public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
         this.tabellaDeiSimboli = tabellaDeiSimboli;
+    }
+
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 
     public Type getType() {
@@ -44,8 +51,4 @@ public class FalseNode extends ASTNode implements Expr {
                 '}';
     }
 
-    @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
-    }
 }

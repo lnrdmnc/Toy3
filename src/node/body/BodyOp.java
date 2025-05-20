@@ -3,6 +3,7 @@ package node.body;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.vardecl.VarDecl;
 import visitor.utils.TabellaDeiSimboli;
 
@@ -65,8 +66,9 @@ public class BodyOp extends ASTNode {
         }
     }
 
+
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

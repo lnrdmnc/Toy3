@@ -7,7 +7,7 @@ import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class ReturnStat extends ASTNode implements Stat {
+public class ReturnStat implements Stat {
 
     private TabellaDeiSimboli tabella;
     private Expr expr;
@@ -49,8 +49,9 @@ public class ReturnStat extends ASTNode implements Stat {
                 '}';
     }
 
+
     @Override
-    public void accept(Visitor v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

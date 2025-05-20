@@ -4,6 +4,6 @@ import visitor.ScopeVisitor;
 
 public interface Stat extends ASTNode
 {
-    Object accept(ScopeVisitor v);
+    Object accept(Visitor v);
 
 }

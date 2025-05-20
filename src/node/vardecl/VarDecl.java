@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.List;
 import node.ASTNode;
 import node.Type;
+import node.Visitor;
 import node.defdecl.Decl;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class VarDecl extends ASTNode implements Decl {
+public class VarDecl  implements Decl {
 
 
     private ArrayList<VarInit> variables; // Lista di variabili (es. "x | y = 5")
@@ -50,9 +51,10 @@ public class VarDecl extends ASTNode implements Decl {
         return costant;
     }
 
+
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }
 

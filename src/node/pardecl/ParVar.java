@@ -2,6 +2,7 @@ package node.pardecl;
 
 import node.ASTNode;
 import node.Type;
+import node.Visitor;
 import node.expr.constant.Identifier;
 import visitor.utils.TabellaDeiSimboli;
 
@@ -59,7 +60,7 @@ public class ParVar extends ASTNode {
     }
 
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor visitor) {
+       return visitor.visit(this);
     }
 }

@@ -2,10 +2,11 @@ package node.expr.constant;
 
 import node.ASTNode;
 import node.Type;
+import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class CharNode  extends ASTNode implements  Expr {
+public class CharNode implements Expr {
 
     private Object costant;
 
@@ -19,6 +20,7 @@ public class CharNode  extends ASTNode implements  Expr {
     public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
         this.tabellaDeiSimboli = tabellaDeiSimboli;
     }
+
 
     public Type getType() {
         return type;
@@ -36,11 +38,12 @@ public class CharNode  extends ASTNode implements  Expr {
         return costant;
     }
 
-
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
-}
 
+
+
+}
 

@@ -3,6 +3,7 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.expr.Expr;
 import node.expr.constant.Identifier;
 import visitor.utils.TabellaDeiSimboli;
@@ -71,7 +72,9 @@ public class AssignOp extends ASTNode implements Stat {
     }
 
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
+
+
 }

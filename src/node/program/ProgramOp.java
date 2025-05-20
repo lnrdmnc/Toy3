@@ -79,6 +79,6 @@ public class ProgramOp extends ASTNode {
 
     @Override
     public Object accept(Visitor v) {
-       return  v.visitProgramOp(this);
+       return  v.visit(this);
     }
 }

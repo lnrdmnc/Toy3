@@ -36,8 +36,13 @@ public class VarInit extends ASTNode {
     }
 
     // Getter
-    public Identifier getId() { return id; }
-    public Expr getInitValue() { return initValue; }
+    public Identifier getId() {
+        return id;
+    }
+
+    public Expr getInitValue() {
+        return initValue;
+    }
 
     @Override
     public String toString() {
@@ -55,7 +60,7 @@ public class VarInit extends ASTNode {
 
     @Override
     public Object accept(Visitor v) {
-       return v.visitVarInit(this);
+        return v.visit(this);
     }
 }
 

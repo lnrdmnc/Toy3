@@ -3,11 +3,12 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.body.BodyOp;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class IfThenNode extends ASTNode implements Stat {
+public class IfThenNode  implements Stat {
 
     private Expr espressione;;
     private TabellaDeiSimboli tabellaDeiSimboli;
@@ -66,7 +67,7 @@ public class IfThenNode extends ASTNode implements Stat {
     }
 
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

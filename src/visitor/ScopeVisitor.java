@@ -31,7 +31,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitProgramOp(ProgramOp programOp) {
+    public Object visit(ProgramOp programOp) {
         // Crea e inserisce la tabella dei simboli per lo scope PROGRAM
         TabellaDeiSimboli tabellaProgramma = new TabellaDeiSimboli(new ArrayList<>(), "PROGRAM");
         typeenv.push(tabellaProgramma);
@@ -141,7 +141,7 @@ public class ScopeVisitor implements Visitor {
 
 
     @Override
-    public Object visitDefDecl(DefDecl defDecl) {
+    public Object visit(DefDecl defDecl) {
         TabellaDeiSimboli tabella= new TabellaDeiSimboli(new ArrayList<>(),defDecl.getId().getName());
         typeenv.add(tabella);
         ArrayList<ParDecl> list=defDecl.getList();
@@ -206,7 +206,7 @@ public class ScopeVisitor implements Visitor {
 
 
     @Override
-    public Object visitVarDecl(VarDecl varDecl) {
+    public Object visit(VarDecl varDecl) {
         TabellaDeiSimboli tabellaDeiSimboli= typeenv.peek();
         varDecl.setTabellaDeiSimboli(tabellaDeiSimboli);
 
@@ -224,7 +224,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitVarInit(VarInit varInit) {
+    public Object visit(VarInit varInit) {
         TabellaDeiSimboli tabella= typeenv.peek();
         varInit.setTabellaDeiSimboli(tabella);
         varInit.getId().accept(this);
@@ -236,7 +236,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitBinaryOp(BinaryOp binaryOp) {
+    public Object visit(BinaryOp binaryOp) {
         TabellaDeiSimboli tabellaDeiSimboli= typeenv.peek();
         binaryOp.setTabellaDeiSimboli(tabellaDeiSimboli);
         binaryOp.getRight().accept(this);
@@ -245,7 +245,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitUnaryOp(UnaryOp unaryOp) {
+    public Object visit(UnaryOp unaryOp) {
         TabellaDeiSimboli tabella= typeenv.peek();
         unaryOp.setTabellaDeiSimboli(tabella);
         unaryOp.getOperand().accept(this);
@@ -253,7 +253,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitFunCall(FunCall funCall) {
+    public Object visit(FunCall funCall) {
         TabellaDeiSimboli tabella= typeenv.peek();
         funCall.setTabellaDeiSimboli(tabella);
 
@@ -267,7 +267,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitIdentifier(Identifier identifier) {
+    public Object visit(Identifier identifier) {
         // Prende la tabella attuale
         TabellaDeiSimboli tabellaCorrente = typeenv.peek();
         identifier.setTabellaDeiSimboli(tabellaCorrente);
@@ -290,42 +290,49 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitIdentifier(CharNode charNode) {
+    public Object visit(CharNode charNode) {
         TabellaDeiSimboli tabella= typeenv.peek();
         charNode.setTabellaDeiSimboli(tabella);
         return null;
     }
 
     @Override
-    public Object visitIdentifier(DoubleNode doubleNode) {
+    public Object visit(DoubleNode doubleNode) {
         TabellaDeiSimboli tabella= typeenv.peek();
         doubleNode.setTabellaDeiSimboli(tabella);
         return null;
     }
 
     @Override
-    public Object visitIdentifier(IntegerNode integerNode) {
+    public Object visit(IntegerNode integerNode) {
         TabellaDeiSimboli tabella= typeenv.peek();
         integerNode.setTabellaDeiSimboli(tabella);
         return null;
     }
 
     @Override
-    public Object visitIdentifier(StringNode stringNode) {
+    public Object visit(StringNode stringNode) {
         TabellaDeiSimboli tabella= typeenv.peek();
         stringNode.setTabellaDeiSimboli(tabella);
         return null;
     }
 
     @Override
-    public Object visitIdentifier(TrueNode trueNode) {
+    public Object visit(TrueNode trueNode) {
         TabellaDeiSimboli tabella= typeenv.peek();
         trueNode.setTabellaDeiSimboli(tabella);
         return null;
     }
 
     @Override
-    public Object visitAssignOp(AssignOp assignOp)
+    public Object visit(FalseNode falseNode) {
+        TabellaDeiSimboli tabella= typeenv.peek();
+        falseNode.setTabellaDeiSimboli(tabella);
+        return null;
+    }
+
+    @Override
+    public Object visit(AssignOp assignOp)
     {
         TabellaDeiSimboli tabella= typeenv.peek();
         assignOp.setTabellaDeiSimboli(tabella);
@@ -356,7 +363,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitWriteOperationNode(WriteOp writeOp) {
+    public Object visit(WriteOp writeOp) {
 
         TabellaDeiSimboli tabella= typeenv.peek();
         writeOp.setTabella(tabella);
@@ -369,7 +376,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitIfThen(IfThenNode ifThen) {
+    public Object visit(IfThenNode ifThen) {
 
         TabellaDeiSimboli tabella= new TabellaDeiSimboli("IF-THEN");
         typeenv.add(tabella);
@@ -382,7 +389,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitIfThenElse(IfThenElse ifThenElse) {
+    public Object visit(IfThenElse ifThenElse) {
         TabellaDeiSimboli tabella= new TabellaDeiSimboli("IF-THEN-ELSE");
         typeenv.add(tabella);
         ifThenElse.getEspressione().accept(this);
@@ -394,7 +401,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitReadOp(ReadOp readOp) {
+    public Object visit(ReadOp readOp) {
         TabellaDeiSimboli tabella= typeenv.peek();
         readOp.setTabellaDeiSimboli(tabella);
         if(readOp.getList()!= null){
@@ -407,7 +414,7 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitWhileOp(WhileOp whileOp) {
+    public Object visit(WhileOp whileOp) {
         TabellaDeiSimboli tabella= new TabellaDeiSimboli("WHILE");
         typeenv.push(tabella);
         whileOp.setTabellaDeiSimboli(tabella);
@@ -418,10 +425,33 @@ public class ScopeVisitor implements Visitor {
     }
 
     @Override
-    public Object visitReturnOp(ReturnStat returnOp) {
+    public Object visit(ReturnStat returnOp) {
         TabellaDeiSimboli tabella= typeenv.peek();
         returnOp.setTabella(tabella);
         returnOp.getExpr().accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visit(ParDecl parDecl) {
+
+        TabellaDeiSimboli tabella= typeenv.peek();
+        parDecl.setTabellaDeiSimboli(tabella);
+
+        if (parDecl.getVariables() != null){
+            for(ParVar variables : parDecl.getVariables())
+            {
+                variables.accept(this);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(ParVar parVar) {
+       TabellaDeiSimboli table = typeenv.peek();
+        parVar.setTabellaDeiSimboli(table);
+        parVar.getId().accept(this);
         return null;
     }
 

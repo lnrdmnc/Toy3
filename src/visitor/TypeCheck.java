@@ -14,6 +14,7 @@ import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
 import node.expr.operation.UnaryOp;
 import node.pardecl.ParDecl;
+import node.pardecl.ParVar;
 import node.program.ProgramOp;
 import node.stat.*;
 import node.vardecl.VarDecl;
@@ -32,7 +33,7 @@ public class TypeCheck implements Visitor {
 
 
     @Override
-    public Object visitProgramOp(ProgramOp programOp) {
+    public Object visit(ProgramOp programOp) {
         typeenv.add(programOp.getTabellaDeiSimboliProgram());
         if(programOp.getDeclarations() != null) {
             for (Decl decl : programOp.getDeclarations()) {
@@ -69,7 +70,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitDefDecl(DefDecl defDecl) {
+    public Object visit(DefDecl defDecl) {
         Type type = defDecl.getType();
         BodyOp bodyOp;
         current_table = defDecl.getBody().getTabellaDeiSimboli();
@@ -129,7 +130,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitVarDecl(VarDecl varDecl) {
+    public Object visit(VarDecl varDecl) {
         ArrayList<VarInit> variabiliDichiarate = (ArrayList<VarInit>) varDecl.getVariables();
         if(variabiliDichiarate != null) {
             for(VarInit var : variabiliDichiarate) {
@@ -154,7 +155,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitVarInit(VarInit varInit) {
+    public Object visit(VarInit varInit) {
        if(varInit.getInitValue() != null) {
            varInit.getInitValue().accept(this);
            varInit.setReturnType(varInit.getInitValue().getType());
@@ -165,7 +166,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitBinaryOp(BinaryOp binaryOp) {
+    public Object visit(BinaryOp binaryOp) {
         Expr leftOperand = binaryOp.getLeft();
         Expr rightOperand = binaryOp.getRight();
         leftOperand.accept(this);
@@ -175,7 +176,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitUnaryOp(UnaryOp unaryOp) {
+    public Object visit(UnaryOp unaryOp) {
         Expr operand = unaryOp.getOperand();
         operand.accept(this);
         unaryOp.setType(this.unaryChecker(unaryOp));
@@ -186,7 +187,7 @@ public class TypeCheck implements Visitor {
 
 
     @Override
-    public Object visitFunCall(FunCall funCall) {
+    public Object visit(FunCall funCall) {
         Stack<TabellaDeiSimboli> cloned = (Stack<TabellaDeiSimboli>) typeenv.clone();
         TipoFunzione type = lookupFunction(funCall.getId(), cloned);
         ArrayList<Boolean> reference = type.getReference();
@@ -234,7 +235,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitIdentifier(Identifier identifier) {
+    public Object visit(Identifier identifier) {
         Stack<TabellaDeiSimboli> clona = (Stack<TabellaDeiSimboli>) typeenv.clone();
         Type type = lookupVariable(identifier, clona);
         if (type == null) {
@@ -245,37 +246,44 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitIdentifier(CharNode charNode) {
+    public Object visit(CharNode charNode) {
         charNode.setType(Type.CHAR);
         return charNode.getType();
     }
 
     @Override
-    public Object visitIdentifier(DoubleNode doubleNode) {
+    public Object visit(DoubleNode doubleNode) {
         doubleNode.setType(Type.DOUBLE);
         return doubleNode.getType();
     }
 
     @Override
-    public Object visitIdentifier(IntegerNode integerNode) {
+    public Object visit(IntegerNode integerNode) {
         integerNode.setType(Type.INTEGER);
         return integerNode.getType();
     }
 
     @Override
-    public Object visitIdentifier(StringNode stringNode) {
+    public Object visit(StringNode stringNode) {
         stringNode.setType(Type.STRING);
         return stringNode.getType();
     }
 
     @Override
-    public Object visitIdentifier(TrueNode trueNode) {
+    public Object visit(TrueNode trueNode) {
         trueNode.setType(Type.BOOLEAN);
         return trueNode.getType();
     }
 
     @Override
-    public Object visitAssignOp(AssignOp assignOp) {
+    public Object visit(FalseNode falseNode) {
+
+        falseNode.setType(Type.BOOLEAN);
+        return falseNode.getType();
+    }
+
+    @Override
+    public Object visit(AssignOp assignOp) {
         ArrayList<Identifier> variabiliAssegnate= assignOp.getVariables();
         for (Identifier id: variabiliAssegnate){
             id.accept(this);
@@ -301,7 +309,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitWriteOperationNode(WriteOp writeOp) {
+    public Object visit(WriteOp writeOp) {
         TabellaDeiSimboli table = typeenv.peek();
         writeOp.setTabella(table);
         if (writeOp.getExpressions() != null) {
@@ -314,7 +322,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitIfThen(IfThenNode ifThen) {
+    public Object visit(IfThenNode ifThen) {
         typeenv.add(ifThen.getTabellaDeiSimboli());
         Expr expr = ifThen.getEspressione();
         Type tipoExpr = (Type) expr.accept(this);
@@ -332,7 +340,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitIfThenElse(IfThenElse ifThenElse) {
+    public Object visit(IfThenElse ifThenElse) {
         typeenv.add(ifThenElse.getTabellaDeiSimboli());
         Expr expr = ifThenElse.getEspressione();
         Type tipoExpr = (Type) expr.accept(this);
@@ -357,7 +365,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitReadOp(ReadOp readOp) {
+    public Object visit(ReadOp readOp) {
         if (readOp.getList() != null) {
             for (Identifier variables : readOp.getList()) {
                 variables.accept(this);
@@ -368,7 +376,7 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitWhileOp(WhileOp whileOp) {
+    public Object visit(WhileOp whileOp) {
 
         typeenv.add(whileOp.getTabellaDeiSimboli());
         Expr expr =whileOp.getEspr();
@@ -389,12 +397,29 @@ public class TypeCheck implements Visitor {
     }
 
     @Override
-    public Object visitReturnOp(ReturnStat returnOp) {
+    public Object visit(ReturnStat returnOp) {
 
         Expr result = returnOp.getExpr();
         Type exprType = (Type) result.accept(this);
         returnOp.setType(Type.NOTYPE);
         return null;
+    }
+
+    @Override
+    public Object visit(ParDecl parDecl) {
+        if(parDecl.getVariables()!= null) {
+            for (ParVar var: parDecl.getVariables()) {
+                var.accept(this);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(ParVar parVar) {
+        parVar.setType(parVar.getId().getType());
+
+        return parVar.getId().getType();
     }
 
     public Stack<TabellaDeiSimboli> clonaTypeEnvironment(Stack<TabellaDeiSimboli> environment) {

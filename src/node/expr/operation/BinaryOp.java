@@ -2,10 +2,11 @@ package node.expr.operation;
 
 import node.ASTNode;
 import node.Type;
+import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class BinaryOp  extends ASTNode implements Expr  {
+public class BinaryOp implements Expr  {
 
     private String operator; // Es. "+", "-", ">", "AND"
     private Expr left;       // Operando sinistro
@@ -48,8 +49,9 @@ public class BinaryOp  extends ASTNode implements Expr  {
         return right;
     }
 
+
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

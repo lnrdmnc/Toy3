@@ -3,12 +3,13 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.body.BodyOp;
 import node.expr.Expr;
 import org.codehaus.plexus.util.FastMap;
 import visitor.utils.TabellaDeiSimboli;
 
-public class IfThenElse extends ASTNode  implements Stat {
+public class IfThenElse implements Stat {
 
     private BodyOp elseStatement;
     private Expr espressione;
@@ -76,5 +77,10 @@ public class IfThenElse extends ASTNode  implements Stat {
     @Override
     public void accept(ASTNode v) {
         v.accept(this);
+    }
+
+    @Override
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

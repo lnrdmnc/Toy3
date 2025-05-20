@@ -7,7 +7,7 @@ import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class UnaryOp extends ASTNode implements Expr  {
+public class UnaryOp implements Expr  {
 
     private TabellaDeiSimboli tabellaDeiSimboli;
     private String operator; // Operatore unario (es: "-" o "not")
@@ -47,7 +47,7 @@ public class UnaryOp extends ASTNode implements Expr  {
     }
 
     @Override
-    public void accept(Visitor v) {
-        return null;
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }

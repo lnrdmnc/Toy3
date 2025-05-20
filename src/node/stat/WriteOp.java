@@ -2,13 +2,14 @@ package node.stat;
 import node.ASTNode;
 import node.Stat;
 import node.Type;
+import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WriteOp extends ASTNode  implements Stat {
+public class WriteOp  implements Stat {
     private ArrayList<Expr> expressions; // Lista di espressioni da stampare
     private  boolean newLine; // Indica se si usa write o writeln
     private TabellaDeiSimboli tabella;
@@ -73,9 +74,10 @@ public class WriteOp extends ASTNode  implements Stat {
                 '}';
     }
 
+
     @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
+    public Object accept(Visitor v) {
+        return v.visit(this);
     }
 }
 
