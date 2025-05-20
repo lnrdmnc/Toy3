@@ -8,7 +8,7 @@ import node.defdecl.Decl;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class VarDecl  implements Decl {
+public class VarDecl extends ASTNode  implements Decl {
 
 
     private ArrayList<VarInit> variables; // Lista di variabili (es. "x | y = 5")

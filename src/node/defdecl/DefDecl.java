@@ -10,7 +10,7 @@ import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 
-public class DefDecl implements Decl {
+public class DefDecl extends ASTNode implements Decl {
 
     private Identifier id;
     private Type type;
