@@ -18,6 +18,9 @@ import node.stat.ReturnStat;
 import node.vardecl.VarDecl;
 import node.vardecl.VarInit;
 import org.apache.commons.io.FilenameUtils;
+import visitor.GeneratoreCodiceC;
+import visitor.ScopeVisitor;
+import visitor.TypeCheck;
 
 import javax.swing.*;
 import java.io.*;
@@ -38,6 +41,15 @@ public class Test {
         Lexer lexer = new Lexer(new FileReader(inputPath.toString()));
         Parser p = new Parser(lexer);
         ProgramOp pr = (ProgramOp) p.debug_parse().value;
+        ScopeVisitor scopeVisitor= new ScopeVisitor();
+        pr.accept(scopeVisitor);
+        TypeCheck visitor= new TypeCheck();
+        pr.accept(visitor);
 
+        FileWriter fileWriter = new FileWriter(outputFolder + File.separator + CinputFileName);
+        GeneratoreCodiceC translate = new GeneratoreCodiceC();
+        String codeC = (String) pr.accept(translate);
+        fileWriter.append(codeC);
+        fileWriter.close();
     }
 }
