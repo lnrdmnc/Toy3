@@ -7,7 +7,7 @@ import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class ReturnStat implements Stat {
+public class ReturnStat extends ASTNode implements Stat {
 
     private TabellaDeiSimboli tabella;
     private Expr expr;

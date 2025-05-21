@@ -9,7 +9,7 @@ import visitor.utils.TabellaDeiSimboli;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WriteOp  implements Stat {
+public class WriteOp extends ASTNode implements Stat {
     private ArrayList<Expr> expressions; // Lista di espressioni da stampare
     private  boolean newLine; // Indica se si usa write o writeln
     private TabellaDeiSimboli tabella;

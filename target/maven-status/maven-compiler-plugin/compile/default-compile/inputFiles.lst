@@ -32,3 +32,12 @@
 /Users/leonardo/IdeaProjects/monaco_es5tsc/src/node/stat/WriteOp.java
 /Users/leonardo/IdeaProjects/monaco_es5tsc/src/node/vardecl/VarDecl.java
 /Users/leonardo/IdeaProjects/monaco_es5tsc/src/node/vardecl/VarInit.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/GeneratoreCodiceC.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/ScopeVisitor.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/TypeCheck.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/utils/Duplicato.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/utils/Firma.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/utils/FirmaVariabile.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/utils/RigaTabellaDeiSimboli.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/utils/TabellaDeiSimboli.java
+/Users/leonardo/IdeaProjects/monaco_es5tsc/src/visitor/utils/TipoFunzione.java

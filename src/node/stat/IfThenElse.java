@@ -9,7 +9,7 @@ import node.expr.Expr;
 import org.codehaus.plexus.util.FastMap;
 import visitor.utils.TabellaDeiSimboli;
 
-public class IfThenElse implements Stat {
+public class IfThenElse extends ASTNode implements Stat {
 
     private BodyOp elseStatement;
     private Expr espressione;
@@ -74,10 +74,7 @@ public class IfThenElse implements Stat {
                 '}';
     }
 
-    @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
-    }
+
 
     @Override
     public Object accept(Visitor v) {

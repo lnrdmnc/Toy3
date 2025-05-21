@@ -10,7 +10,7 @@ import visitor.utils.TabellaDeiSimboli;
 
 import java.util.List;
 
-public class FunCall implements Expr, Stat {
+public class FunCall extends ASTNode implements Expr, Stat {
     private String functionName;      // Nome della funzione
     private List<Expr> arguments;    // Argomenti della funzione
     private Identifier id;

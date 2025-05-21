@@ -422,6 +422,33 @@ public class TypeCheck implements Visitor {
         return parVar.getId().getType();
     }
 
+    @Override
+    public Object visit(BodyOp bodyOp) {
+        typeenv.add(bodyOp.getTabellaDeiSimboli());
+
+        if (bodyOp.getDichiarazioni() != null){
+            for(VarDecl bodyNode : bodyOp.getDichiarazioni())
+            {
+                bodyNode.accept(this);
+            }
+        }
+
+        if (bodyOp.getStatements() != null){
+            for(Stat stats : bodyOp.getStatements())
+            {
+                Type type = (Type) stats.accept(this);
+                if(type == null)
+                    throw new RuntimeException("Statements not valid.");
+
+            }
+        }
+        bodyOp.setType(Type.NOTYPE);
+
+        typeenv.pop();
+
+        return bodyOp.getType();
+    }
+
     public Stack<TabellaDeiSimboli> clonaTypeEnvironment(Stack<TabellaDeiSimboli> environment) {
         Stack<TabellaDeiSimboli> clone = new Stack<>();
         for (TabellaDeiSimboli current: environment) {

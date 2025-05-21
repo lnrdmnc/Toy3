@@ -12,6 +12,14 @@ public class TrueNode implements Expr {
     private TabellaDeiSimboli tabellaDeiSimboli;
     private Type type;
 
+    public boolean isCostant() {
+        return costant;
+    }
+
+    public void setCostant(boolean costant) {
+        this.costant = costant;
+    }
+
     public TabellaDeiSimboli getTabellaDeiSimboli() {
         return tabellaDeiSimboli;
     }
@@ -37,8 +45,4 @@ public class TrueNode implements Expr {
         this.costant = true;
     }
 
-    @Override
-    public void accept(ASTNode v) {
-        v.accept(this);
-    }
 }

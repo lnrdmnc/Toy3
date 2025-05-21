@@ -9,7 +9,7 @@ import node.expr.Expr;
 import visitor.ScopeVisitor;
 import visitor.utils.TabellaDeiSimboli;
 
-public class WhileOp implements  Stat {
+public class WhileOp extends ASTNode implements  Stat {
 
     private Type type;
     private TabellaDeiSimboli tabellaDeiSimboli;

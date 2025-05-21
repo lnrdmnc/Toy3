@@ -8,7 +8,7 @@ import node.body.BodyOp;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
-public class IfThenNode  implements Stat {
+public class IfThenNode  extends ASTNode implements Stat {
 
     private Expr espressione;;
     private TabellaDeiSimboli tabellaDeiSimboli;

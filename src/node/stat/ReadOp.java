@@ -10,7 +10,7 @@ import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
 
-public class ReadOp implements Stat {
+public class ReadOp extends ASTNode implements Stat {
 
     private ArrayList<Identifier> list;
 
@@ -60,10 +60,6 @@ public class ReadOp implements Stat {
                 '}';
     }
 
-    @Override
-    public Object accept(ScopeVisitor v) {
-        return null;
-    }
 
     @Override
     public Object accept(Visitor v) {

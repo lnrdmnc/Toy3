@@ -455,6 +455,46 @@ public class ScopeVisitor implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(BodyOp bodyOp) {
+        TabellaDeiSimboli fatherTable = typeenv.peek();
+        TabellaDeiSimboli bodyTable = new TabellaDeiSimboli("Body Table" + " " + fatherTable.getNome());
+
+        typeenv.add(bodyTable);
+
+        if (bodyOp.getDichiarazioni() != null){
+            for(VarDecl vars : bodyOp.getDichiarazioni())
+            {
+                Firma type = new FirmaVariabile(vars.getType());
+
+                if(vars.getType() == null) {
+                    if(!controllaDichiarazioneVariabile(vars)) throw new RuntimeException("Incorrect Variable declaration");
+
+                    type = new FirmaVariabile(vars.getCostant());
+                }
+                for(VarInit var: vars.getVariables()){
+                    RigaTabellaDeiSimboli row = new RigaTabellaDeiSimboli(var.getId().getName(), "variable", type);
+                    bodyTable.aggiungiRiga(row);
+                }
+
+                vars.accept(this);
+            }
+        }
+
+        if (bodyOp.getStatements() != null){
+            for(Stat stats : bodyOp.getStatements())
+            {
+                stats.accept(this);
+            }
+        }
+
+        bodyOp.setTabellaDeiSimboli(bodyTable);
+        typeenv.pop();
+
+        return null;
+
+    }
+
     public boolean controllaDichiarazioneVariabile(VarDecl dichiarazione) {
         int numeroVariabili = dichiarazione.getVariables().size();
 
