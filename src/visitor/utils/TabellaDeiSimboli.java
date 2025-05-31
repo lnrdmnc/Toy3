@@ -17,11 +17,9 @@ public class TabellaDeiSimboli {
     
     //forse serve fare un eccezzione?
 
-    public void aggiungiRiga(RigaTabellaDeiSimboli riga) throws RuntimeException{
+    public void aggiungiRiga(RigaTabellaDeiSimboli riga) throws Duplicato{
         if(rigaLista.contains(riga)) {
-
-            throw new RuntimeException("Riga già presente nella tabella dei simboli");
-
+            throw new Duplicato("Riga già presente nella tabella dei simboli");
         }
         this.rigaLista.add(riga);
         return;

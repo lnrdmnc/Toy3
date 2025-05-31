@@ -80,7 +80,15 @@ public class RigaTabellaDeiSimboli {
 
     @Override
     public boolean equals(Object obj) {
-       RigaTabellaDeiSimboli riga= (RigaTabellaDeiSimboli) obj;
-        return this.id.equals(riga.getId()) && riga.tipo.equals(riga.getTipo());
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        RigaTabellaDeiSimboli riga = (RigaTabellaDeiSimboli) obj;
+
+        System.out.println("id equals: " + this.id.equals(riga.getId()));
+        System.out.println("tipo equals: " + this.tipo.equals(riga.getTipo()));
+        System.out.println("equals invocato su RigaTabellaDeiSimboli");
+
+        return this.id.equals(riga.getId()) && this.tipo.equals(riga.getTipo());
     }
 }

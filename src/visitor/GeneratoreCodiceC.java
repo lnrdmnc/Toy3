@@ -18,22 +18,24 @@ import node.program.ProgramOp;
 import node.stat.*;
 import node.vardecl.VarDecl;
 import node.vardecl.VarInit;
-import visitor.utils.*;
+import visitor.utils.TabellaDeiSimboli;
+import visitor.utils.RigaTabellaDeiSimboli;
+import visitor.utils.TipoFunzione;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class GeneratoreCodiceC implements Visitor {
 
+
+public class GeneratoreCodiceC implements Visitor {
     private HashMap<String, ArrayList<Boolean>> firms = new HashMap<>();
 
     public GeneratoreCodiceC() {
-       return;
+        return;
     }
 
     // --- COSTANTI ---
-
     @Override
     public String visit(DoubleNode doubleNode) {
         return String.valueOf(doubleNode.getCostant());
@@ -65,7 +67,6 @@ public class GeneratoreCodiceC implements Visitor {
     }
 
     // --- OPERAZIONI BINARIE E UNARIE ---
-
     @Override
     public String visit(BinaryOp binaryOp) {
         StringBuilder builder = new StringBuilder();
@@ -86,7 +87,6 @@ public class GeneratoreCodiceC implements Visitor {
     }
 
     // --- IDENTIFICATORI E CHIAMATE DI FUNZIONE ---
-
     @Override
     public String visit(Identifier identifier) {
         StringBuilder builder = new StringBuilder();
@@ -102,41 +102,38 @@ public class GeneratoreCodiceC implements Visitor {
         StringBuilder builder = new StringBuilder();
         Identifier id = funCall.getId();
         builder.append(id.accept(this)).append("_fun(");
-        List<Boolean> references = firms.get(id.getName());
+        ArrayList<Boolean> references = firms.get(id.getName());
         List<Expr> exprs = funCall.getArguments();
+        if (exprs != null && !exprs.isEmpty()) {
+            // Ordine corretto dei parametri
+            for (int i = exprs.size() -1; i >= 0; i--) {
+                Expr espressione_corrente=exprs.get(i);
+                String exprString = (String) espressione_corrente.accept(this);
 
-        if (exprs != null) {
-            for (int i = exprs.size() - 1; i >= 0; i--) {
-                Expr expr = exprs.get(i);
-                String exprContent = (String) expr.accept(this);
-
-                if (references.get(i)) {
+                // Gestione speciale per i parametri by reference
+                if ( references!= null && references.get(i)==true){
                     builder.append("&");
                 }
-                builder.append(exprContent);
-
-                if (i != 0) {
+                builder.append(exprString);
+                if(i != 0){
                     builder.append(", ");
                 }
             }
         }
-
         builder.append(")");
         return builder.toString();
     }
 
     // --- STATEMENT I/O ---
-
     @Override
     public String visit(ReadOp readOp) {
         StringBuilder result = new StringBuilder();
         for (Identifier id : readOp.getList()) {
             Type type = id.getType();
             String varName = (String) id.accept(this);
-
             if (type == Type.STRING) {
                 result.append("buffer = (char*) malloc((1024*5)*sizeof(char));\n");
-                result.append("scanf(\"%[^\n]\", buffer);\n");
+                result.append("scanf(\"%[^\\n]\", buffer);\n");
                 result.append(varName).append(" = (char*) malloc(strlen(buffer) + 1);\n");
                 result.append("strcpy(").append(varName).append(", buffer);\n");
                 result.append("free(buffer);\n");
@@ -147,7 +144,6 @@ public class GeneratoreCodiceC implements Visitor {
             } else if (type == Type.CHAR) {
                 result.append("scanf(\"%c\", &").append(varName).append(");\n");
             }
-
             result.append("getchar();\n");
         }
         return result.toString();
@@ -157,55 +153,60 @@ public class GeneratoreCodiceC implements Visitor {
     public String visit(WriteOp writeOp) {
         StringBuilder printArgs = new StringBuilder();
         StringBuilder printString = new StringBuilder("printf(\"");
-
         List<Expr> expressions = writeOp.getExpressions();
-        int size = expressions.size() - 1;
 
-        for (int i = size; i >= 0; i--) {
+        for (int i = 0; i < expressions.size(); i++) {
             Expr expr = expressions.get(i);
             String expression = (String) expr.accept(this);
             Type type = expr.getType();
             String specifier = getStringSpecifier(type);
-            printString.append(specifier);
-            printArgs.append(expression).append(",");
-        }
 
-        if (printArgs.length() > 0) {
-            printArgs = new StringBuilder(printArgs.substring(0, printArgs.length() - 1));
+            // Sostituisci newline con escape
+            if (expression.contains("\n")) {
+                expression = expression.replace("\n", "\\n");
+            }
+
+            printString.append(specifier);
+            printArgs.append(expression);
+            if (i < expressions.size() - 1) {
+                printArgs.append(", ");
+            }
         }
 
         if (writeOp.isNewLine()) {
             printString.append("\\n");
         }
-
-        printString.append("\", ").append(printArgs).append(");");
+        printString.append("\", ").append(printArgs).append(");\n");
         return printString.toString();
     }
 
     // --- ASSEGNAZIONI ---
-
     @Override
     public String visit(AssignOp assignOp) {
         StringBuilder builder = new StringBuilder();
         ArrayList<Identifier> ids = assignOp.getVariables();
         List<Expr> exprs = assignOp.getExpressions();
-
         for (int i = ids.size() - 1; i >= 0; i--) {
             String id = (String) ids.get(i).accept(this);
             String expr = (String) exprs.get(i).accept(this);
             builder.append(id).append(" = ").append(expr).append(";\n");
         }
-
         return builder.toString();
     }
 
     // --- CONTROL FLOW ---
-
     @Override
     public String visit(IfThenNode ifThen) {
         String condition = (String) ifThen.getEspressione().accept(this);
-        String body = (String)ifThen.getBody().accept(this);
-        return "if (" + condition + ")" + body;
+        String body = (String) ifThen.getBody().accept(this);
+
+        // Rimuovi le parentesi graffe extra
+        body = body.trim();
+        if (body.startsWith("{") && body.endsWith("}")) {
+            body = body.substring(1, body.length() - 1).trim();
+        }
+
+        return "if (" + condition + ")" + body +"\n";
     }
 
     @Override
@@ -213,23 +214,23 @@ public class GeneratoreCodiceC implements Visitor {
         String condition = (String) ifThenElse.getEspressione().accept(this);
         String ifBody = (String) ifThenElse.getIfthenStatement().accept(this);
         String elseBody = (String) ifThenElse.getElseStatement().accept(this);
-        return "if (" + condition + ")" + ifBody + "else" + elseBody;
+        return "if (" + condition + ")" + indent(ifBody, 1) +
+                "else \n" + indent(elseBody, 1) + "\n";
     }
 
     @Override
     public String visit(WhileOp whileOp) {
-        String condition =(String) whileOp.getEspr().accept(this);
+        String condition = (String) whileOp.getEspr().accept(this);
         String body = (String) whileOp.getBody().accept(this);
-        return "while (" + condition + ")" + body;
+        return "while (" + condition + ")" + body ;
     }
 
     @Override
     public String visit(ReturnStat returnOp) {
-        return "return " + returnOp.getExpr().accept(this) + ";";
+        return "return " + returnOp.getExpr().accept(this) + ";\n";
     }
 
     // --- DICHIARAZIONI ---
-
     @Override
     public String visit(VarDecl varDecl) {
         StringBuilder builder = new StringBuilder();
@@ -241,7 +242,9 @@ public class GeneratoreCodiceC implements Visitor {
         } else {
             builder.append(getCType(varDecl.getType())).append(" ");
             int size = varDecl.getVariables().size() - 1;
-            boolean isString = varDecl.getType() == Type.STRING;
+            boolean isString=false;
+            if(varDecl.getType()== Type.STRING)
+                isString=true;
 
             for (int i = size; i >= 0; i--) {
                 if (isString && i != size) builder.append("*");
@@ -252,8 +255,7 @@ public class GeneratoreCodiceC implements Visitor {
                 }
             }
         }
-
-        builder.append(";");
+        builder.append(";\n");
         return builder.toString();
     }
 
@@ -271,17 +273,24 @@ public class GeneratoreCodiceC implements Visitor {
     public String visit(ParDecl parDecl) {
         StringBuilder builder = new StringBuilder();
         int size = parDecl.getVariables().size() - 1;
+        String ref="";
+        ParVar variable;
+
+
         for (int i = size; i >= 0; i--) {
-            ParVar variable = parDecl.getVariables().get(i);
+
+
+            variable = parDecl.getVariables().get(i);
+
+
             if (i == 0) {
-                builder.append(getCType(parDecl.getType())).append(" ").append(variable.accept(this));
+                builder.append(getCType(parDecl.getType())).append(" ").append(ref).append(variable.accept(this));
             } else {
-                builder.append(getCType(parDecl.getType())).append(" ").append(variable.accept(this)).append(",");
+                builder.append(getCType(parDecl.getType())).append(" ").append(ref).append(variable.accept(this)).append(",");
             }
         }
         return builder.toString();
     }
-
     @Override
     public String visit(ParVar parVar) {
         StringBuilder builder = new StringBuilder();
@@ -289,33 +298,33 @@ public class GeneratoreCodiceC implements Visitor {
         return builder.toString();
     }
 
-    // --- CORPO DEL PROGRAMMA ---
 
+    // --- CORPO DEL PROGRAMMA ---
     @Override
     public String visit(BodyOp body) {
-        StringBuilder builder = new StringBuilder("{");
+        StringBuilder builder = new StringBuilder();
+        builder.append("{");
         for (VarDecl decl : body.getDichiarazioni()) {
             builder.append(decl.accept(this));
         }
         for (Stat stmt : body.getStatements()) {
             builder.append(stmt.accept(this));
-            if (stmt instanceof FunCall) {
-                builder.append(";\n");
+            if(stmt instanceof FunCall){
+                builder.append(";").append("\n");
             }
         }
         builder.append("}");
+
         return builder.toString();
     }
 
     // --- PROGRAMMA PRINCIPALE ---
-
     @Override
     public String visit(ProgramOp programOp) {
         StringBuilder builder = new StringBuilder();
         setupFirms(programOp);
         builder.append(buildHeader());
-
-        if (programOp.getDeclarations()!= null) {
+        if (programOp.getDeclarations() != null) {
             for (Decl decl : programOp.getDeclarations()) {
                 if (decl instanceof DefDecl) {
                     builder.append(generateFunctionDeclaration((DefDecl) decl)).append("\n");
@@ -325,7 +334,6 @@ public class GeneratoreCodiceC implements Visitor {
                 builder.append(decl.accept(this)).append("\n");
             }
         }
-
         builder.append("int main() {\n");
         if (programOp.getVarDeclarations() != null) {
             for (Decl decl : programOp.getVarDeclarations()) {
@@ -336,12 +344,12 @@ public class GeneratoreCodiceC implements Visitor {
             for (Stat stmt : programOp.getStatements()) {
                 builder.append(stmt.accept(this)).append("\n");
                 if (stmt instanceof FunCall) {
-                    builder.append(";\n");
+                    builder.append(";");
                 }
             }
         }
-
-        builder.append("    return 0;\n}\n");
+        builder.append("    return 0;\n");
+        builder.append("}\n");
         return builder.toString();
     }
 
@@ -355,15 +363,13 @@ public class GeneratoreCodiceC implements Visitor {
     }
 
     // --- METODI AUSILIARI ---
-
     private String getCType(Type t) {
         if (t == null) return "void";
         switch (t) {
             case STRING: return "char*";
             case CHAR: return "char";
             case DOUBLE: return "double";
-            case INTEGER:
-            case BOOLEAN: return "int";
+            case INTEGER, BOOLEAN: return "int";
             default: return "";
         }
     }
@@ -374,17 +380,50 @@ public class GeneratoreCodiceC implements Visitor {
         header.append("#include <stdlib.h>\n");
         header.append("#include <string.h>\n");
         header.append("#include <math.h>\n");
-        header.append("#define BUFFER_SIZE 1024*4\n");
-        header.append("\n// Funzioni di supporto\n");
+        header.append("#define BUFFER_SIZE 1024*4\n\n");
+
+        header.append("// Funzioni di supporto\n");
         header.append("char* buffer;\n");
         header.append("char* string_concat(char* s1, char* s2) {\n");
         header.append("    char* ns = malloc(strlen(s1) + strlen(s2) + 1);\n");
         header.append("    strcpy(ns, s1);\n");
         header.append("    strcat(ns, s2);\n");
         header.append("    return ns;\n");
-        header.append("}\n");
+        header.append("}\n\n");
 
-        // Altre funzioni simili a quelle del file originale...
+        header.append("char* int2str(int n) {\n");
+        header.append("    char buffer[BUFFER_SIZE];\n");
+        header.append("    int len = sprintf(buffer, \"%d\", n);\n");
+        header.append("    char *ns = malloc(len + 1);\n");
+        header.append("    sprintf(ns, \"%d\", n);\n");
+        header.append("    return ns;\n");
+        header.append("}\n\n");
+
+        header.append("char* char2str(char c) {\n");
+        header.append("    char *ns = malloc(2);\n");
+        header.append("    sprintf(ns, \"%c\", c);\n");
+        header.append("    return ns;\n");
+        header.append("}\n\n");
+
+        header.append("char* float2str(float f) {\n");
+        header.append("    char buffer[BUFFER_SIZE];\n");
+        header.append("    int len = sprintf(buffer, \"%f\", f);\n");
+        header.append("    char *ns = malloc(len + 1);\n");
+        header.append("    sprintf(ns, \"%f\", f);\n");
+        header.append("    return ns;\n");
+        header.append("}\n\n");
+
+        header.append("char* bool2str(int b) {\n");
+        header.append("    char* ns = NULL;\n");
+        header.append("    if(b) {\n");
+        header.append("        ns = malloc(5);\n");
+        header.append("        strcpy(ns, \"true\");\n");
+        header.append("    } else {\n");
+        header.append("        ns = malloc(6);\n");
+        header.append("        strcpy(ns, \"false\");\n");
+        header.append("    }\n");
+        header.append("    return ns;\n");
+        header.append("}\n\n");
 
         return header.toString();
     }
@@ -395,17 +434,17 @@ public class GeneratoreCodiceC implements Visitor {
 
     private String generateSignature(DefDecl decl) {
         StringBuilder builder = new StringBuilder();
-        if (decl.getType() == Type.STRING) {
-            builder.append("char* ");
-        } else if (decl.getType() == null) {
-            builder.append("void ");
-        } else {
-            builder.append(getCType(decl.getType())).append(" ");
-        }
+
+        // Tipo di ritorno
+        builder.append(getCType(decl.getType())).append(" ");
+
+        // Nome funzione
         builder.append(decl.getId().accept(this)).append("_fun(");
-        if (decl.getList() != null) {
-            for (int i = decl.getList().size() - 1; i >= 0; i--) {
-                if (i > 0) builder.append(",");
+
+        // Parametri
+        if (decl.getList() != null && !decl.getList().isEmpty()) {
+            for (int i = 0; i < decl.getList().size(); i++) {
+                if (i > 0) builder.append(", ");
                 builder.append(decl.getList().get(i).accept(this));
             }
         }
@@ -428,14 +467,12 @@ public class GeneratoreCodiceC implements Visitor {
     }
 
     private String generateBinaryExpr(String operator, Expr left, Expr right) {
-        // Implementa la logica per generare il codice C per operazioni binarie
         boolean arithOp = operator.equals("PLUS") || operator.equals("MINUS") ||
                 operator.equals("TIMES") || operator.equals("DIV");
         boolean relop = operator.equals("LT") || operator.equals("LE") ||
                 operator.equals("GT") || operator.equals("GE") ||
                 operator.equals("EQ") || operator.equals("NE");
         boolean logicOp = operator.equals("AND") || operator.equals("OR");
-
         Type leftType = left.getType();
         Type rightType = right.getType();
 
@@ -472,7 +509,6 @@ public class GeneratoreCodiceC implements Visitor {
     private String generateUnaryExpressionCode(UnaryOp node) {
         Expr expr = node.getOperand();
         String operator = node.getOperator();
-
         if (operator.equals("MINUS")) {
             return "-" + expr.accept(this);
         } else if (operator.equals("NOT")) {
@@ -521,5 +557,20 @@ public class GeneratoreCodiceC implements Visitor {
             case CHAR: return "%c";
             default: return "";
         }
+    }
+
+    private boolean isReferenceParameter(String functionName, int paramIndex) {
+        if (firms.containsKey(functionName)) {
+            ArrayList<Boolean> refs = firms.get(functionName);
+            if (paramIndex < refs.size()) {
+                return refs.get(paramIndex);
+            }
+        }
+        return false;
+    }
+
+    private String indent(String code, int level) {
+        String indent = "    ".repeat(level);
+        return indent + code.replace("\n", "\n" + indent);
     }
 }

@@ -72,15 +72,17 @@ public class ScopeVisitor implements Visitor {
                     kind = "variable";
 
                     if (varDecl.getType() == null) {
-                        if (varDecl.getCostant() == null) {
+                        if (!controllaDichiarazioneVariabile(varDecl)) {
                             throw new RuntimeException("Errore: dichiarazione variabile non valida per " + name);
                         }
                         type = new FirmaVariabile(varDecl.getCostant());
                     } else {
                         type = new FirmaVariabile(varDecl.getType());
                     }
-
                     RigaTabellaDeiSimboli riga = new RigaTabellaDeiSimboli(name, kind, type);
+                    System.out.println(tabellaProgramma);
+                    System.out.println("Aggiungo simbolo: " + riga.getId() + " di tipo " + riga.getTipo());
+
                     tabellaProgramma.aggiungiRiga(riga);
                 }
             }
@@ -256,7 +258,6 @@ public class ScopeVisitor implements Visitor {
     public Object visit(FunCall funCall) {
         TabellaDeiSimboli tabella= typeenv.peek();
         funCall.setTabellaDeiSimboli(tabella);
-
         funCall.getId().accept(this);
         if (funCall.getArguments()!= null){
             for (Expr arg : funCall.getArguments()) {
@@ -417,7 +418,7 @@ public class ScopeVisitor implements Visitor {
     public Object visit(WhileOp whileOp) {
         TabellaDeiSimboli tabella= new TabellaDeiSimboli("WHILE");
         typeenv.push(tabella);
-        whileOp.setTabellaDeiSimboli(tabella);
+        whileOp.getEspr().accept(this);
         whileOp.getBody().accept(this);
         typeenv.pop();
         whileOp.setTabellaDeiSimboli(tabella);
