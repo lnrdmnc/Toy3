@@ -250,9 +250,10 @@ public class TypeCheck implements Visitor {
     @Override
     public Object visit(Identifier identifier) {
         Stack<TabellaDeiSimboli> clona = (Stack<TabellaDeiSimboli>) typeenv.clone();
+        System.out.println(clona);
         Type type = lookupVariable(identifier, clona);
         if (type == null) {
-            throw new RuntimeException("Variable is not declared.");
+            throw new RuntimeException("Variable" + identifier + " is not declared.");
         }
         identifier.setType(type);
         return identifier.getType();
@@ -275,6 +276,7 @@ public class TypeCheck implements Visitor {
         integerNode.setType(Type.INTEGER);
         return integerNode.getType();
     }
+
 
     @Override
     public Object visit(StringNode stringNode) {

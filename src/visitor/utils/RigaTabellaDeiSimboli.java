@@ -10,18 +10,18 @@ public class RigaTabellaDeiSimboli {
     public RigaTabellaDeiSimboli() {
     }
 
-    public RigaTabellaDeiSimboli(String tipo, String id) {
+    public RigaTabellaDeiSimboli(String id, String tipo) {
         this.tipo = tipo;
         this.id = id;
     }
 
-    public RigaTabellaDeiSimboli(String tipo, String id, Firma firma) {
+    public RigaTabellaDeiSimboli(String id, String tipo, Firma firma) {
         this.tipo = tipo;
         this.id = id;
         this.firma = firma;
     }
 
-    public RigaTabellaDeiSimboli(String tipo, String id, Firma firma, boolean isRef) {
+    public RigaTabellaDeiSimboli(String id, String tipo, Firma firma, boolean isRef) {
         this.tipo = tipo;
         this.id = id;
         this.firma = firma;
@@ -80,15 +80,10 @@ public class RigaTabellaDeiSimboli {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
 
         RigaTabellaDeiSimboli riga = (RigaTabellaDeiSimboli) obj;
 
-        System.out.println("id equals: " + this.id.equals(riga.getId()));
-        System.out.println("tipo equals: " + this.tipo.equals(riga.getTipo()));
-        System.out.println("equals invocato su RigaTabellaDeiSimboli");
-
+        System.out.println("id yoo " + riga.getId());
         return this.id.equals(riga.getId()) && this.tipo.equals(riga.getTipo());
     }
 }

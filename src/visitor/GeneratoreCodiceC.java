@@ -97,6 +97,7 @@ public class GeneratoreCodiceC implements Visitor {
         return builder.toString();
     }
 
+    /*
     @Override
     public String visit(FunCall funCall) {
         StringBuilder builder = new StringBuilder();
@@ -104,14 +105,50 @@ public class GeneratoreCodiceC implements Visitor {
         builder.append(id.accept(this)).append("_fun(");
         ArrayList<Boolean> references = firms.get(id.getName());
         List<Expr> exprs = funCall.getArguments();
-        if (exprs != null && !exprs.isEmpty()) {
+
+        if (exprs != null) {
+            // Modifica: percorri in ordine normale (non inverso)
+            for (int i = 0; i < exprs.size(); i++) {
+                Expr currentExpr = exprs.get(i);
+                String exprString = (String) currentExpr.accept(this);
+
+                // Gestione speciale per i parametri by reference
+                if (references.get(i)) {
+                    // Se è un riferimento, aggiungi & solo se non è già un puntatore
+                    if (!exprString.startsWith("&") && !exprString.startsWith("*")) {
+                        builder.append("&");
+                    }
+                }
+                builder.append(exprString);
+
+                if (i < exprs.size() - 1) {
+                    builder.append(", ");
+                }
+            }
+        }
+        builder.append(")");
+        return builder.toString();
+    }
+    */
+
+
+
+
+    @Override
+    public String visit(FunCall funCall) {
+        StringBuilder builder = new StringBuilder();
+        Identifier id = funCall.getId();
+        builder.append(id.accept(this)).append("_fun(");
+        ArrayList<Boolean> references = firms.get(id.getName());
+        List<Expr> exprs = funCall.getArguments();
+        if (exprs != null) {
             // Ordine corretto dei parametri
             for (int i = exprs.size() -1; i >= 0; i--) {
                 Expr espressione_corrente=exprs.get(i);
                 String exprString = (String) espressione_corrente.accept(this);
 
                 // Gestione speciale per i parametri by reference
-                if ( references!= null && references.get(i)==true){
+                if (references.get(i)==true){
                     builder.append("&");
                 }
                 builder.append(exprString);
@@ -123,6 +160,8 @@ public class GeneratoreCodiceC implements Visitor {
         builder.append(")");
         return builder.toString();
     }
+
+
 
     // --- STATEMENT I/O ---
     @Override
@@ -197,6 +236,7 @@ public class GeneratoreCodiceC implements Visitor {
     // --- CONTROL FLOW ---
     @Override
     public String visit(IfThenNode ifThen) {
+        StringBuilder builder=new StringBuilder();
         String condition = (String) ifThen.getEspressione().accept(this);
         String body = (String) ifThen.getBody().accept(this);
 
@@ -205,17 +245,19 @@ public class GeneratoreCodiceC implements Visitor {
         if (body.startsWith("{") && body.endsWith("}")) {
             body = body.substring(1, body.length() - 1).trim();
         }
+        builder.append("if(").append(condition).append(")").append(body);
+        return builder.toString();
 
-        return "if (" + condition + ")" + body +"\n";
     }
 
     @Override
     public String visit(IfThenElse ifThenElse) {
+        StringBuilder builder=new StringBuilder();
         String condition = (String) ifThenElse.getEspressione().accept(this);
         String ifBody = (String) ifThenElse.getIfthenStatement().accept(this);
         String elseBody = (String) ifThenElse.getElseStatement().accept(this);
-        return "if (" + condition + ")" + indent(ifBody, 1) +
-                "else \n" + indent(elseBody, 1) + "\n";
+        builder.append("if(").append(condition).append(")").append(ifBody).append("else").append(elseBody);
+        return builder.toString();
     }
 
     @Override
@@ -243,6 +285,7 @@ public class GeneratoreCodiceC implements Visitor {
             builder.append(getCType(varDecl.getType())).append(" ");
             int size = varDecl.getVariables().size() - 1;
             boolean isString=false;
+
             if(varDecl.getType()== Type.STRING)
                 isString=true;
 
@@ -279,12 +322,10 @@ public class GeneratoreCodiceC implements Visitor {
 
         for (int i = size; i >= 0; i--) {
 
-
             variable = parDecl.getVariables().get(i);
-
-
             if (i == 0) {
                 builder.append(getCType(parDecl.getType())).append(" ").append(ref).append(variable.accept(this));
+
             } else {
                 builder.append(getCType(parDecl.getType())).append(" ").append(ref).append(variable.accept(this)).append(",");
             }
@@ -314,7 +355,6 @@ public class GeneratoreCodiceC implements Visitor {
             }
         }
         builder.append("}");
-
         return builder.toString();
     }
 
@@ -443,9 +483,11 @@ public class GeneratoreCodiceC implements Visitor {
 
         // Parametri
         if (decl.getList() != null && !decl.getList().isEmpty()) {
-            for (int i = 0; i < decl.getList().size(); i++) {
-                if (i > 0) builder.append(", ");
+            for (int i = decl.getList().size() - 1; i >= 0; i--) {
                 builder.append(decl.getList().get(i).accept(this));
+                if (i > 0) {
+                    builder.append(", ");
+                }
             }
         }
         builder.append(")");
@@ -455,9 +497,11 @@ public class GeneratoreCodiceC implements Visitor {
     private void setupFirms(ASTNode node) {
         ProgramOp programNode = (ProgramOp) node;
         TabellaDeiSimboli table = programNode.getTabellaDeiSimboliProgram();
-        if (table != null) {
-            for (RigaTabellaDeiSimboli row : table.getRigaLista()) {
+        ArrayList<RigaTabellaDeiSimboli> riga= table.getRigaLista();
+        if (riga != null) {
+            for (RigaTabellaDeiSimboli row : riga) {
                 if (row.getFirma() instanceof TipoFunzione) {
+
                     String name = row.getId();
                     ArrayList<Boolean> refs = ((TipoFunzione) row.getFirma()).getReference();
                     firms.put(name, refs);
@@ -501,7 +545,8 @@ public class GeneratoreCodiceC implements Visitor {
             return "strcmp(" + right.accept(this) + ", " + left.accept(this) + ") == 0";
         } else if (operator.equals("NE") && leftType == Type.STRING && rightType == Type.STRING) {
             return "strcmp(" + right.accept(this) + ", " + left.accept(this) + ") != 0";
-        } else {
+        }
+        else {
             throw new RuntimeException("Operazione non supportata: " + operator + " con tipi " + leftType + " e " + rightType);
         }
     }

@@ -154,6 +154,7 @@ public class ScopeVisitor implements Visitor {
 
                 for (ParVar parVar : parDecl.getVariables()) {
                     RigaTabellaDeiSimboli riga = new RigaTabellaDeiSimboli(parVar.getId().getName(), "variable", tipo, parVar.isReference());
+                    System.out.println("rigaaa:" + riga);
                     tabella.aggiungiRiga(riga);
                 }
                 parDecl.accept(this);
@@ -474,7 +475,7 @@ public class ScopeVisitor implements Visitor {
                     type = new FirmaVariabile(vars.getCostant());
                 }
                 for(VarInit var: vars.getVariables()){
-                    RigaTabellaDeiSimboli row = new RigaTabellaDeiSimboli(var.getId().getName(), "variable", type);
+                    RigaTabellaDeiSimboli row = new RigaTabellaDeiSimboli( var.getId().getName(), "variable", type);
                     bodyTable.aggiungiRiga(row);
                 }
 

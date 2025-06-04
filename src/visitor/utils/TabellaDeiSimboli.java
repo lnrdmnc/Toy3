@@ -23,7 +23,6 @@ public class TabellaDeiSimboli {
         }
         this.rigaLista.add(riga);
         return;
-
     }
 
     public TabellaDeiSimboli(ArrayList<RigaTabellaDeiSimboli> rigaLista, String nome) {
@@ -94,6 +93,7 @@ public class TabellaDeiSimboli {
     }
 
     public boolean contains(Identifier node, String tipo){
+        System.out.println(rigaLista);
         RigaTabellaDeiSimboli daCercare = new RigaTabellaDeiSimboli(node.getName(), tipo);
         if (rigaLista != null) {
             for (RigaTabellaDeiSimboli corrente : rigaLista) {
