@@ -1,4 +1,4 @@
-# File: .gitlab-ci.yml
+# .gitlab-ci.yml
 
 stages:
   - test
@@ -14,24 +14,27 @@ cache:
 
 .verify: &verify
   stage: test
-  image: maven:3.8.6-jdk-21-slim
+  image: maven:3.8.6-openjdk-21-slim
   script:
     - mvn $MAVEN_CLI_OPTS clean compile
     - mvn $MAVEN_CLI_OPTS test
 
 test:jdk21:
   <<: *verify
-  only:
-    - merge_requests
-    - branches
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
 
-deploy:
+.deploy: &deploy
   stage: deploy
-  image: maven:3.8.6-jdk-21-slim
+  image: maven:3.8.6-openjdk-21-slim
   script:
     - mvn --batch-mode --errors clean deploy -s ci_settings.xml
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  environment:
+    name: production
+  when: manual
 
 deploy:jdk21:
   <<: *deploy
