@@ -57,6 +57,7 @@ deploy:jdk17:
   script:
     - 'mvn $MAVEN_CLI_OPTS clean'
     - 'mvn $MAVEN_CLI_OPTS compile'
+    - 'mvn deploy -DaltDeploymentRepository=gitlab-maven::default::https://gitlab.com/api/v4/projects/65375710/packages/maven'
     - - 'chmod +x runtests.sh'
     - './runtests.sh'
   only:
