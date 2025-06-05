@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <miaCondizione>false</miaCondizione>
+        <miaCondizione>true</miaCondizione>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -104,11 +104,4 @@
     </plugins>
 
 </build>
-
-    <distributionManagement>
-        <repository>
-            <id>gitlab</id>
-            <url>https://gitlab.com/api/v4/projects/65375710/packages/maven</url>
-        </repository>
-    </distributionManagement>
 </project>
