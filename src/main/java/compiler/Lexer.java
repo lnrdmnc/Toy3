@@ -28,7 +28,7 @@ public class Lexer implements java_cup.runtime.Scanner {
   // Lexical states.
   public static final int YYINITIAL = 0;
   public static final int STRING = 2;
-  protected Object yylval;
+  protected int yylval;
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
