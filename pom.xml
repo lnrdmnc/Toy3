@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>UsoCup</artifactId>
+    <artifactId>monaco_es5tsc</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -85,9 +85,24 @@
                 <expectedConflicts>0</expectedConflicts>
             </configuration>
         </plugin>
-
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <configuration>
+                <mainClass>src.Test</mainClass>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0</version>
+            <configuration>
+                <skipTests>true</skipTests>
+            </configuration>
+        </plugin>
     </plugins>
-</build>
 
+</build>
 
 </project>
