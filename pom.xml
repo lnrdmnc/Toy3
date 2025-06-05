@@ -105,4 +105,10 @@
 
 </build>
 
+    <distributionManagement>
+        <repository>
+            <id>gitlab</id>
+            <url>https://gitlab.com/api/v4/projects/65375710/packages/maven</url>
+        </repository>
+    </distributionManagement>
 </project>
