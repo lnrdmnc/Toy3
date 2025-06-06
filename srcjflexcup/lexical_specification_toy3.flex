@@ -21,6 +21,7 @@ import java_cup.runtime.*; // This is how we pass tokens to the parser
 %column
 %state STRING
 
+
 %{
   StringBuffer string = new StringBuffer();
 
