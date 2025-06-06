@@ -643,14 +643,10 @@ public class Lexer implements java_cup.runtime.Scanner {
   StringBuffer string = new StringBuffer();
 
   private Symbol symbol(int type) {
-    System.out.println("Token riconosciuto: " + yytext());
     return new Symbol(type, yyline, yycolumn, yytext());
-
-
   }
 
   private Symbol symbol(int type, Object value) {
-    System.out.println("Token riconosciuto: " + yytext());
     return new Symbol(type, yyline, yycolumn, value);
   }
 

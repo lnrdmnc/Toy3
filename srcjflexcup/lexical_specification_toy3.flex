@@ -26,12 +26,10 @@ import java_cup.runtime.*; // This is how we pass tokens to the parser
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn, yytext());
-    System.out.println("Token riconosciuto: " + yytext() + " → " + sym.terminalNames[yylval.sym]);
   }
 
   private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline, yycolumn, value);
-    System.out.println("Token riconosciuto: " + yytext() + " → " + sym.terminalNames[yylval.sym]);
   }
 
 %}
