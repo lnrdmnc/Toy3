@@ -21,9 +21,6 @@ import java_cup.runtime.*; // This is how we pass tokens to the parser
 %column
 %state STRING
 
-%{
-    protected int yylval;
-%}
 
 %{
   StringBuffer string = new StringBuffer();
