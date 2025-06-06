@@ -22,6 +22,10 @@ import java_cup.runtime.*; // This is how we pass tokens to the parser
 %state STRING
 
 %{
+    protected int yylval;
+%}
+
+%{
   StringBuffer string = new StringBuffer();
 
   private Symbol symbol(int type) {
