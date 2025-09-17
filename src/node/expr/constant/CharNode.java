@@ -6,44 +6,79 @@ import node.Visitor;
 import node.expr.Expr;
 import visitor.utils.TabellaDeiSimboli;
 
+/**
+ * La classe CharNode rappresenta un nodo costante di tipo carattere (char)
+ * all'interno dell'albero sintattico astratto (AST).
+ * Implementa l'interfaccia Expr, quindi è un'espressione nell'AST.
+ */
 public class CharNode implements Expr {
 
+    // Valore costante di tipo carattere rappresentato da questo nodo
     private Object costant;
 
+    // Tabella dei simboli associata al nodo, utile per la gestione degli scope
     private TabellaDeiSimboli tabellaDeiSimboli;
+
+    // Tipo del nodo, che rappresenta il tipo di dato associato (in questo caso, char)
     private Type type;
 
+    /**
+     * Restituisce la tabella dei simboli associata al nodo.
+     * @return TabellaDeiSimboli
+     */
     public TabellaDeiSimboli getTabellaDeiSimboli() {
         return tabellaDeiSimboli;
     }
 
+    /**
+     * Imposta la tabella dei simboli per il nodo.
+     * @param tabellaDeiSimboli Tabella dei simboli da associare
+     */
     public void setTabellaDeiSimboli(TabellaDeiSimboli tabellaDeiSimboli) {
         this.tabellaDeiSimboli = tabellaDeiSimboli;
     }
 
-
+    /**
+     * Restituisce il tipo del nodo.
+     * @return Tipo del nodo
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     * Imposta il tipo del nodo.
+     * @param type Tipo da associare
+     */
     public void setType(Type type) {
         this.type = type;
     }
 
+    /**
+     * Costruttore della classe CharNode.
+     * Inizializza il valore costante del nodo come carattere.
+     * @param costant Valore costante di tipo carattere
+     */
     public CharNode(Object costant) {
         this.costant = (char) costant;
     }
 
+    /**
+     * Restituisce il valore costante rappresentato da questo nodo.
+     * @return Valore costante
+     */
     public Object getCostant() {
         return costant;
     }
 
+    /**
+     * Metodo di accettazione per il Visitor.
+     * Permette di applicare un'operazione definita da un Visitor alla classe CharNode.
+     * @param visitor Visitor da applicare
+     * @return Risultato dell'operazione del Visitor
+     */
     @Override
     public Object accept(Visitor visitor) {
         return visitor.visit(this);
     }
-
-
-
 }
-
