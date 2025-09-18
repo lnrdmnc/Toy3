@@ -29,7 +29,7 @@ terminal            WHILE, DO, RETURN;
 terminal            REF, DEF;
 terminal            INT, BOOL, DOUBLE, STRING, CHAR;
 terminal            PROGRAM, BEGIN, END;
-
+terminal            INIT, FOR, STEP;
 /** Constants **/
 terminal            TRUE, FALSE;
 terminal            int INT_CONST;
@@ -84,6 +84,12 @@ non terminal ArrayList<Decl> Decls;
 non terminal ArrayList<Identifier> Vars;
 non terminal ParVar PVar;
 non terminal ArrayList<ParVar> PVars;
+
+
+
+
+// Aggiungi il non-terminale per il nuovo statement
+non terminal InitDoForStep InitDoForStepStat;
 
 /* Precedences */
 precedence left OR;
@@ -167,7 +173,10 @@ Stat ::= Vars:vars_list IN SEMI {:RESULT= new ReadOp(vars_list);:}
     | IF LPAR Expr:expression RPAR THEN Body:ifBody{: RESULT= new IfThenNode(expression,ifBody);:}
     | IF LPAR Expr:expression RPAR THEN Body:ifBody ELSE Body:elseBody {:RESULT= new IfThenElse(expression,ifBody,elseBody);:}
     | WHILE LPAR Expr:expression RPAR DO Body:whileBody{:RESULT= new WhileOp(expression,whileBody);:}
-    | RETURN Expr:exp SEMI{:RESULT=new ReturnStat(exp);:};
+    | RETURN Expr:exp SEMI{:RESULT=new ReturnStat(exp);:}
+    | INIT LPAR VarDecls:initVars RPAR DO Body:doBody FOR LPAR Expr:condition RPAR STEP LPAR Exprs:stepExprs RPAR {: RESULT = new InitDoForStep(initVars, doBody, condition, stepExprs); :};
+
+
 
 Vars ::= ID:id_attr PIPE Vars:list {: list.add(new Identifier(id_attr)); RESULT = list;:}
      | ID:id_attrib {:ArrayList<Identifier> list = new ArrayList<Identifier>(); list.add(new Identifier(id_attrib)); RESULT = list;:};

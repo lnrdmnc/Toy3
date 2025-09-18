@@ -4,8 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
-    <artifactId>monaco_es5tsc</artifactId>
+    <!-- MODIFICA QUESTI VALORI -->
+    <groupId>Toy3</groupId>
+    <artifactId>toy3-compiler</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -15,107 +16,111 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-<dependencies>
-    <dependency>
-        <groupId>com.github.vbmacher</groupId>
-        <artifactId>java-cup-runtime</artifactId>
-        <version>11b-20160615-1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.github.abrarsyed.jastyle</groupId>
-        <artifactId>jAstyle</artifactId>
-        <version>1.3</version>
-    </dependency>
-    <dependency>
-        <groupId>de.jflex</groupId>
-        <artifactId>maven-jflex-plugin</artifactId>
-        <version>1.4.3-r1</version>
-    </dependency>
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>RELEASE</version>
-        <scope>compile</scope>
-    </dependency>
-</dependencies>
-
-<build>
-    <sourceDirectory>
-        src
-    </sourceDirectory>
-
-    <plugins>
-        <plugin>
-            <groupId>de.jflex</groupId>
-            <artifactId>jflex-maven-plugin</artifactId>
-            <version>1.8.2</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>generate</goal>
-                    </goals>
-                    <configuration>
-                        <outputDirectory>src</outputDirectory>
-                        <lexDefinitions>
-                            <lexDefinition>srcjflexcup/lexical_specification_toy3.flex</lexDefinition>
-                        </lexDefinitions>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
+    <dependencies>
+        <dependency>
             <groupId>com.github.vbmacher</groupId>
-            <artifactId>cup-maven-plugin</artifactId>
-            <version>11b-20160615</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>generate</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <className>Parser</className>
-                <cupDefinition>srcjflexcup/grammar_specification_toy3.cup</cupDefinition>
-                <outputDirectory>src</outputDirectory>
-                <packageName>main.java.compiler</packageName>
-                <dumpGrammar>${miaCondizione}</dumpGrammar>
-                <dumpStates>${miaCondizione}</dumpStates>
-                <dumpTables>${miaCondizione}</dumpTables>
-                <expectedConflicts>0</expectedConflicts>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>3.0.0</version>
-            <configuration>
-                <mainClass>src.Test</mainClass>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0</version>
-            <configuration>
-                <skipTests>true</skipTests>
-            </configuration>
+            <artifactId>java-cup-runtime</artifactId>
+            <version>11b-20160615-1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.abrarsyed.jastyle</groupId>
+            <artifactId>jAstyle</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.jflex</groupId>
+            <artifactId>maven-jflex-plugin</artifactId>
+            <version>1.4.3-r1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
-        </plugin>
-    </plugins>
+    <build>
+        <sourceDirectory>src</sourceDirectory>
 
+        <plugins>
+            <!-- JFlex Plugin per generare il Lexer -->
+            <plugin>
+                <groupId>de.jflex</groupId>
+                <artifactId>jflex-maven-plugin</artifactId>
+                <version>1.8.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src</outputDirectory>
+                            <lexDefinitions>
+                                <lexDefinition>srcjflexcup/lexical_specification_toy3.flex</lexDefinition>
+                            </lexDefinitions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
+            <!-- CUP Plugin per generare il Parser -->
+            <plugin>
+                <groupId>com.github.vbmacher</groupId>
+                <artifactId>cup-maven-plugin</artifactId>
+                <version>11b-20160615</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <className>Parser</className>
+                    <cupDefinition>srcjflexcup/grammar_specification_toy3.cup</cupDefinition>
+                    <outputDirectory>src</outputDirectory>
+                    <packageName>main.java.compiler</packageName>
+                    <dumpGrammar>${miaCondizione}</dumpGrammar>
+                    <dumpStates>${miaCondizione}</dumpStates>
+                    <dumpTables>${miaCondizione}</dumpTables>
+                    <expectedConflicts>0</expectedConflicts>
+                </configuration>
+            </plugin>
 
-</build>
+            <!-- Exec Plugin per esecuzione -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <mainClass>src.Test</mainClass>
+                </configuration>
+            </plugin>
 
+            <!-- Surefire Plugin per i test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- RIMUOVI O MODIFICA QUESTA SEZIONE SE NON USI GITLAB PACKAGES -->
+    <!--
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.com/api/v4/projects/65375710/packages/maven</url>
+            <url>https://gitlab.com/api/v4/projects/TUO_PROJECT_ID/packages/maven</url>
         </repository>
         <snapshotRepository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.com/api/v4/projects/65375710/packages/maven</url>
+            <url>https://gitlab.com/api/v4/projects/TUO_PROJECT_ID/packages/maven</url>
         </snapshotRepository>
     </distributionManagement>
+    -->
 </project>

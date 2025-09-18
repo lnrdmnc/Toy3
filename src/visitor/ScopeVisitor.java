@@ -712,6 +712,57 @@ public class ScopeVisitor implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(InitDoForStep initDoForStep) {
+        // Crea un nuovo scope per il costrutto init-do-for-step
+        TabellaDeiSimboli tabella = new TabellaDeiSimboli("INIT-DO-FOR-STEP");
+        typeenv.push(tabella);
+
+        // Gestisce le variabili di inizializzazione
+        if (initDoForStep.getInitScope() != null) {
+            for (VarDecl decl : initDoForStep.getInitScope()) {
+                // Inserisce la variabile nella tabella dei simboli
+                for (VarInit varInit : decl.getVariables()) {
+                    String name = varInit.getId().getName();
+                    Firma tipo;
+                    if (decl.getType() != null) {
+                        // Tipo esplicito
+                        tipo = new FirmaVariabile(decl.getType());
+                    } else if (decl.getCostant() != null) {
+                        tipo = new FirmaVariabile(decl.getCostant());
+                    } else {
+                        throw new RuntimeException("Errore: dichiarazione variabile non valida per " + name);
+                    }
+
+                    RigaTabellaDeiSimboli riga = new RigaTabellaDeiSimboli(name, "variable", tipo);
+                    tabella.aggiungiRiga(riga);
+
+                    decl.accept(this);
+                }
+            }
+        }
+
+            // Visita il corpo del do
+            initDoForStep.getDoBody().accept(this);
+
+            // Visita la condizione se presente
+            if (initDoForStep.getCondition() != null) {
+                initDoForStep.getCondition().accept(this);
+            }
+
+            // Visita le espressioni di step se presenti
+            if (initDoForStep.getStepExprs() != null) {
+                for (Expr expr : initDoForStep.getStepExprs()) {
+                    expr.accept(this);
+                }
+            }
+
+            initDoForStep.setTabellaDeiSimboli(tabella);
+            typeenv.pop(); // Chiude lo scope
+            return null;
+
+        }
+
     // --- METODI DI UTILITÀ ---
 
     /**

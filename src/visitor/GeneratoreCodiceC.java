@@ -25,6 +25,7 @@ import visitor.utils.TipoFunzione;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Classe GeneratoreCodiceC - Visitor per la generazione di codice C
@@ -454,6 +455,83 @@ public class GeneratoreCodiceC implements Visitor {
             }
         }
         builder.append("}");
+        return builder.toString();
+    }
+
+    /**
+     * Genera codice C per il costrutto init-do-for-step
+     *
+     * Produce un blocco C con:
+     * - Dichiarazioni e inizializzazioni delle variabili
+     * - Ciclo do-while con corpo e condizione
+     * - Espressioni di step alla fine di ogni iterazione
+     *
+     * @param initDoForStep nodo che rappresenta il costrutto
+     * @return codice C generato
+     */
+    @Override
+    public String visit(InitDoForStep initDoForStep) {
+        StringBuilder builder = new StringBuilder();
+
+        // Inizio nuovo scope C
+        builder.append("{\n");
+
+        // Genera dichiarazioni e inizializzazioni
+        if (initDoForStep.getInitScope() != null) {
+            for (VarDecl varDecl : initDoForStep.getInitScope()) {
+                // Riusa la logica esistente per VarDecl
+                builder.append(varDecl.accept(this));
+            }
+        }
+
+        // Genera il ciclo do-while
+        builder.append("do");
+
+        // Genera il corpo del do
+        String bodyCode = (String) initDoForStep.getDoBody().accept(this);
+
+        // Se ci sono espressioni di step, le inserisce prima della chiusura del corpo
+        if (initDoForStep.getStepExprs() != null && !initDoForStep.getStepExprs().isEmpty()) {
+            // Trova l'ultima parentesi graffa del corpo
+            int lastBraceIndex = bodyCode.lastIndexOf('}');
+            if (lastBraceIndex != -1) {
+                // Inserisce le espressioni di step prima della chiusura
+                String bodyWithoutLastBrace = bodyCode.substring(0, lastBraceIndex);
+                builder.append(bodyWithoutLastBrace);
+
+                // Aggiunge le espressioni di step
+                for (Expr stepExpr : initDoForStep.getStepExprs()) {
+                    String stepCode = (String) stepExpr.accept(this);
+                    builder.append(stepCode);
+                    // Aggiunge ; se non è già presente (per assegnazioni)
+                    if (!stepCode.trim().endsWith(";")) {
+                        builder.append(";");
+                    }
+                    builder.append("\n");
+                }
+
+                builder.append("}\n");
+            } else {
+                // Fallback: aggiunge il corpo così com'è
+                builder.append(bodyCode);
+            }
+        } else {
+            // Nessuna espressione di step
+            builder.append(bodyCode);
+        }
+
+        // Genera la condizione while
+        builder.append("while(");
+        if (initDoForStep.getCondition() != null) {
+            builder.append(initDoForStep.getCondition().accept(this));
+        } else {
+            builder.append("1"); // Loop infinito se nessuna condizione
+        }
+        builder.append(");\n");
+
+        // Chiusura scope C
+        builder.append("}\n");
+
         return builder.toString();
     }
 
