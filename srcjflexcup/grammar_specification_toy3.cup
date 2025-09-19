@@ -85,11 +85,12 @@ non terminal ArrayList<Identifier> Vars;
 non terminal ParVar PVar;
 non terminal ArrayList<ParVar> PVars;
 
+non terminal InitDoForStep InitDoForStep;
+non terminal AssignOp AssignSt;
+non terminal Expr Expr2;
 
 
 
-// Aggiungi il non-terminale per il nuovo statement
-non terminal InitDoForStep InitDoForStepStat;
 
 /* Precedences */
 precedence left OR;
@@ -174,7 +175,13 @@ Stat ::= Vars:vars_list IN SEMI {:RESULT= new ReadOp(vars_list);:}
     | IF LPAR Expr:expression RPAR THEN Body:ifBody ELSE Body:elseBody {:RESULT= new IfThenElse(expression,ifBody,elseBody);:}
     | WHILE LPAR Expr:expression RPAR DO Body:whileBody{:RESULT= new WhileOp(expression,whileBody);:}
     | RETURN Expr:exp SEMI{:RESULT=new ReturnStat(exp);:}
-    | INIT LPAR VarDecls:initVars RPAR DO Body:doBody FOR LPAR Expr:condition RPAR STEP LPAR Exprs:stepExprs RPAR {: RESULT = new InitDoForStep(initVars, doBody, condition, stepExprs); :};
+    | INIT LPAR VarDecls:initVars RPAR DO Body:doBody FOR LPAR Expr2:condition RPAR STEP LPAR AssignSt:a RPAR SEMI {: RESULT = new InitDoForStep(initVars, doBody, condition, a); :};
+
+AssignSt ::= Vars:v ASSIGN Exprs:exprs {:RESULT = new AssignOp((ArrayList<Identifier>) v, (ArrayList<Expr>) exprs);:}
+              |{: RESULT = null; :};
+
+              Expr2 ::= Expr:e {: RESULT = (Expr) e; :}
+              | {: RESULT = null; :};
 
 
 

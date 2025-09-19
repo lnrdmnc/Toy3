@@ -8,7 +8,6 @@ import node.body.BodyOp;
 import node.expr.Expr;
 import node.vardecl.VarDecl;
 
-import node.vardecl.VarInit;
 import visitor.utils.TabellaDeiSimboli;
 
 import java.util.ArrayList;
@@ -17,11 +16,11 @@ public class InitDoForStep extends ASTNode implements Stat {
     private ArrayList<VarDecl> initScope;      // Variabili di inizializzazione
     private BodyOp doBody;                    // Corpo del ciclo
     private Expr condition;                   // Condizione (opzionale)
-    private ArrayList<Expr> stepExprs;        // Espressioni di step (opzionali)
+    private AssignOp stepExprs;        // Espressioni di step (opzionali)
     private TabellaDeiSimboli tabellaDeiSimboli;
     private Type type;
 
-    public InitDoForStep(ArrayList<VarDecl> initVars, BodyOp doBody, Expr condition, ArrayList<Expr> stepExprs) {
+    public InitDoForStep(ArrayList<VarDecl> initVars, BodyOp doBody, Expr condition, AssignOp stepExprs) {
         this.initScope = initVars;
         this.doBody = doBody;
         this.condition = condition;
@@ -52,11 +51,11 @@ public class InitDoForStep extends ASTNode implements Stat {
         this.condition = condition;
     }
 
-    public ArrayList<Expr> getStepExprs() {
+    public AssignOp getStepExprs() {
         return stepExprs;
     }
 
-    public void setStepExprs(ArrayList<Expr> stepExprs) {
+    public void setStepExprs(AssignOp stepExprs) {
         this.stepExprs = stepExprs;
     }
 

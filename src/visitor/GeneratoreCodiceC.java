@@ -473,9 +473,6 @@ public class GeneratoreCodiceC implements Visitor {
     public String visit(InitDoForStep initDoForStep) {
         StringBuilder builder = new StringBuilder();
 
-        // Inizio nuovo scope C
-        builder.append("{\n");
-
         // Genera dichiarazioni e inizializzazioni
         if (initDoForStep.getInitScope() != null) {
             for (VarDecl varDecl : initDoForStep.getInitScope()) {
@@ -491,24 +488,15 @@ public class GeneratoreCodiceC implements Visitor {
         String bodyCode = (String) initDoForStep.getDoBody().accept(this);
 
         // Se ci sono espressioni di step, le inserisce prima della chiusura del corpo
-        if (initDoForStep.getStepExprs() != null && !initDoForStep.getStepExprs().isEmpty()) {
+        if (initDoForStep.getStepExprs() != null) {
             // Trova l'ultima parentesi graffa del corpo
             int lastBraceIndex = bodyCode.lastIndexOf('}');
             if (lastBraceIndex != -1) {
                 // Inserisce le espressioni di step prima della chiusura
                 String bodyWithoutLastBrace = bodyCode.substring(0, lastBraceIndex);
                 builder.append(bodyWithoutLastBrace);
-
-                // Aggiunge le espressioni di step
-                for (Expr stepExpr : initDoForStep.getStepExprs()) {
-                    String stepCode = (String) stepExpr.accept(this);
-                    builder.append(stepCode);
-                    // Aggiunge ; se non è già presente (per assegnazioni)
-                    if (!stepCode.trim().endsWith(";")) {
-                        builder.append(";");
-                    }
-                    builder.append("\n");
-                }
+                // Aggiungi le assegnazioni di step alla fine del corpo
+                builder.append(initDoForStep.getStepExprs().accept(this));
 
                 builder.append("}\n");
             } else {
@@ -529,8 +517,6 @@ public class GeneratoreCodiceC implements Visitor {
         }
         builder.append(");\n");
 
-        // Chiusura scope C
-        builder.append("}\n");
 
         return builder.toString();
     }

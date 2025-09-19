@@ -704,52 +704,30 @@ public class TypeCheck implements Visitor {
     public Object visit(InitDoForStep initDoForStep) {
         typeenv.add(initDoForStep.getTabellaDeiSimboli());
 
-        // Controlla le variabili di inizializzazione
+        // Controlla le dichiarazioni di inizializzazione
         if (initDoForStep.getInitScope() != null) {
             for (VarDecl decl : initDoForStep.getInitScope()) {
-                Type declType = (Type) decl.accept(this);
-                if(declType != null && declType != Type.NOTYPE) {
-                    throw new RuntimeException("Init variable declaration must be valid");
-                }
-                for (VarInit var : decl.getVariables()) {
-                    if (var.getInitValue() == null) {
-                        throw new RuntimeException("Init variables must be initialized: " + var.getId().getName());
-                    }
-
-                    // Controlla compatibilità tipo dichiarato vs valore iniziale
-                    Type varType = (Type) var.accept(this);
-                    if (decl.getType() != null) {
-                        Type expectedType = decl.getType();
-                        if (varType != expectedType && !(expectedType == Type.DOUBLE && varType == Type.INTEGER)) {
-                            throw new RuntimeException("Init variable " + var.getId().getName() +
-                                    " type mismatch: expected " + expectedType +
-                                    " but got " + varType);
-                        }
-                    }
-                }
+                decl.accept(this);
             }
-
-
         }
 
         // Controlla il corpo del do
         Type bodyType = (Type) initDoForStep.getDoBody().accept(this);
         if (bodyType != Type.NOTYPE) {
-            throw new RuntimeException("Do body must have NOTYPE");
+            throw new RuntimeException("Do body must have NOTYPE, got: " + bodyType);
         }
+
 
         // Controlla la condizione (deve essere boolean se presente)
         if (initDoForStep.getCondition() != null) {
-            Type condType = (Type) initDoForStep.getCondition().accept(this);
-            if (condType != Type.BOOLEAN) {
-                throw new RuntimeException("For condition must be boolean, got: " + condType);
-            }
+            initDoForStep.getCondition().accept(this);
         }
 
-        // Controlla le espressioni di step
+        // Controlla le assegnazioni di step
         if (initDoForStep.getStepExprs() != null) {
-            for (Expr expr : initDoForStep.getStepExprs()) {
-                expr.accept(this);
+            Type stepType = (Type) initDoForStep.getStepExprs().accept(this);
+            if (stepType != Type.NOTYPE) {
+                throw new RuntimeException("Step assignments must have NOTYPE, got: " + stepType);
             }
         }
 

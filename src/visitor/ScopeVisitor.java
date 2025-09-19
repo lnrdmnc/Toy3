@@ -747,15 +747,14 @@ public class ScopeVisitor implements Visitor {
 
             // Visita la condizione se presente
             if (initDoForStep.getCondition() != null) {
+                System.out.print(initDoForStep.getCondition());
                 initDoForStep.getCondition().accept(this);
             }
 
-            // Visita le espressioni di step se presenti
-            if (initDoForStep.getStepExprs() != null) {
-                for (Expr expr : initDoForStep.getStepExprs()) {
-                    expr.accept(this);
-                }
-            }
+        // Visita le assegnazioni di step se presenti
+        if (initDoForStep.getStepExprs() != null) {
+            initDoForStep.getStepExprs().accept(this);
+        }
 
             initDoForStep.setTabellaDeiSimboli(tabella);
             typeenv.pop(); // Chiude lo scope
