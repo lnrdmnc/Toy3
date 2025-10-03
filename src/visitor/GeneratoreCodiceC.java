@@ -366,7 +366,8 @@ public class GeneratoreCodiceC implements Visitor {
             int size = varDecl.getVariables().size() - 1;
             boolean isString = false;
 
-            if(varDecl.getType() == Type.STRING)
+            // aggiunge il puntatore sia a string che a RGB
+            if(varDecl.getType() == Type.STRING || varDecl.getType() == Type.RGB)
                 isString = true;
 
             // Genera la lista delle variabili

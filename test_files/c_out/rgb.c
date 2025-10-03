@@ -48,7 +48,7 @@ char* bool2str(int b) {
 }
 
 int main() {
-char* primaryColor,secondaryColor;
+char* primaryColor,*secondaryColor;
 
 primaryColor = "red";
 
