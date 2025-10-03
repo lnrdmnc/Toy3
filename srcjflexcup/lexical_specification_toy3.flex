@@ -72,6 +72,7 @@ CharC = '[^\\[ntbrf\\\'\"]]' | {EscChar}
 <YYINITIAL> "return" { return symbol(sym.RETURN); }
 <YYINITIAL> "ref" { return symbol(sym.REF); }
 <YYINITIAL> "def" { return symbol(sym.DEF); }
+<YYINITIAL> "idef" { return symbol(sym.IDEF); }
 <YYINITIAL> "int" { return symbol(sym.INT); }
 <YYINITIAL> "bool" { return symbol(sym.BOOL); }
 <YYINITIAL> "double" { return symbol(sym.DOUBLE); }

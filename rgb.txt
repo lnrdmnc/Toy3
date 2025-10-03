@@ -1,16 +1,28 @@
 program
+    // Esempio per rgb
+    primaryColor | secondaryColor: rgb;
+    result: int;
 
+    // Esempio per idef
+    idef multiply(a: int; b: int) {
+        return a * b;
+    }
 
 begin
-primaryColor | secondaryColor: rgb;
+    primaryColor := red;
+    secondaryColor := blue;
 
-primaryColor := red;
-secondaryColor := blue;
-
-if (primaryColor == red) then {
+    if (primaryColor == red) then {
         "Il colore primario e' rosso" >>;
-}
+    }
 
-secondaryColor !>>; // Stampa "blue"
+    // Stampa il valore di secondaryColor
+    secondaryColor !>>; // Stampa "blue"
 
+    // Utilizzo di idef
+
+    result := multiply(5, 10);
+
+    "Il risultato di 5*10 e': " >>;
+    result !>>; // Stampa 50
 end

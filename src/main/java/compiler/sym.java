@@ -8,61 +8,62 @@ package main.java.compiler;
 /** CUP generated interface containing symbol constants. */
 public interface sym {
   /* terminals */
-  public static final int CHAR_CONST = 26;
-  public static final int ASSIGNDECL = 51;
-  public static final int CHAR = 14;
-  public static final int GE = 37;
-  public static final int UMINUS = 32;
-  public static final int DOUBLE_CONST = 25;
-  public static final int DOUBLE = 12;
-  public static final int SEMI = 48;
-  public static final int INT = 10;
-  public static final int OUT = 54;
-  public static final int RBRAC = 45;
-  public static final int MINUS = 29;
+  public static final int CHAR_CONST = 27;
+  public static final int ASSIGNDECL = 52;
+  public static final int CHAR = 15;
+  public static final int GE = 38;
+  public static final int UMINUS = 33;
+  public static final int DOUBLE_CONST = 26;
+  public static final int DOUBLE = 13;
+  public static final int SEMI = 49;
+  public static final int INT = 11;
+  public static final int OUT = 55;
+  public static final int RBRAC = 46;
+  public static final int MINUS = 30;
   public static final int REF = 8;
-  public static final int RED = 21;
-  public static final int OUTNL = 55;
-  public static final int NOT = 35;
-  public static final int AND = 33;
-  public static final int LT = 38;
-  public static final int RPAR = 43;
-  public static final int IN = 53;
-  public static final int OR = 34;
-  public static final int COMMA = 47;
-  public static final int BOOL = 11;
-  public static final int DIV = 31;
-  public static final int BEGIN = 17;
-  public static final int PLUS = 28;
-  public static final int ASSIGN = 49;
+  public static final int RED = 22;
+  public static final int OUTNL = 56;
+  public static final int NOT = 36;
+  public static final int AND = 34;
+  public static final int LT = 39;
+  public static final int RPAR = 44;
+  public static final int IN = 54;
+  public static final int OR = 35;
+  public static final int COMMA = 48;
+  public static final int BOOL = 12;
+  public static final int DIV = 32;
+  public static final int BEGIN = 18;
+  public static final int PLUS = 29;
+  public static final int ASSIGN = 50;
   public static final int IF = 2;
-  public static final int ID = 52;
-  public static final int LE = 39;
+  public static final int ID = 53;
+  public static final int LE = 40;
   public static final int EOF = 0;
   public static final int RETURN = 7;
-  public static final int INT_CONST = 24;
-  public static final int TRUE = 19;
+  public static final int INT_CONST = 25;
+  public static final int TRUE = 20;
   public static final int error = 1;
-  public static final int PROGRAM = 16;
-  public static final int PIPE = 46;
-  public static final int EQ = 40;
-  public static final int RGB = 15;
-  public static final int TIMES = 30;
-  public static final int COLON = 50;
+  public static final int PROGRAM = 17;
+  public static final int PIPE = 47;
+  public static final int EQ = 41;
+  public static final int RGB = 16;
+  public static final int TIMES = 31;
+  public static final int COLON = 51;
   public static final int ELSE = 4;
   public static final int WHILE = 5;
   public static final int THEN = 3;
-  public static final int NE = 41;
-  public static final int BLUE = 23;
-  public static final int END = 18;
-  public static final int LPAR = 42;
-  public static final int STRING = 13;
+  public static final int NE = 42;
+  public static final int BLUE = 24;
+  public static final int IDEF = 10;
+  public static final int END = 19;
+  public static final int LPAR = 43;
+  public static final int STRING = 14;
   public static final int DEF = 9;
-  public static final int LBRAC = 44;
-  public static final int GREEN = 22;
-  public static final int FALSE = 20;
-  public static final int STRING_CONST = 27;
-  public static final int GT = 36;
+  public static final int LBRAC = 45;
+  public static final int GREEN = 23;
+  public static final int FALSE = 21;
+  public static final int STRING_CONST = 28;
+  public static final int GT = 37;
   public static final int DO = 6;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -75,6 +76,7 @@ public interface sym {
   "RETURN",
   "REF",
   "DEF",
+  "IDEF",
   "INT",
   "BOOL",
   "DOUBLE",

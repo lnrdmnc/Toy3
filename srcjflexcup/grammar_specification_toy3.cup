@@ -26,7 +26,7 @@ import node.Stat;
 
 terminal            IF, THEN, ELSE;
 terminal            WHILE, DO, RETURN;
-terminal            REF, DEF;
+terminal            REF, DEF,IDEF;
 terminal            INT, BOOL, DOUBLE, STRING, CHAR,RGB;
 terminal            PROGRAM, BEGIN, END;
 
@@ -65,6 +65,7 @@ non terminal ArrayList<Stat> Statements;
 non terminal BodyOp Body;
 non terminal FunCall FunCall;
 
+
 /** Types and Constants **/
 non terminal  OptType;
 non terminal  TypeOrConstant;
@@ -75,6 +76,7 @@ non terminal   Expr Constant;
 non terminal ParDecl ParDecl;
 non terminal ArrayList<ParDecl> ParDecls;
 non terminal DefDecl DefDecl;
+non terminal DefDecl IDefDecl;
 non terminal VarDecl VarDecl;
 non terminal ArrayList<VarDecl> VarDecls;
 non terminal ArrayList<VarInit> VarsOptInit;
@@ -100,8 +102,15 @@ Programma ::= PROGRAM Decls:decls BEGIN VarDecls:vars Statements:stats END{: RES
 
 Decls ::= VarDecl:var Decls:list {: list.add(0,var); RESULT=list;:}
       | DefDecl:func Decls:list {: list.add(0,func); RESULT=list; :}
+      | IDefDecl:idef Decls:list {: list.add(0,idef); RESULT=list; :}
       | {: ArrayList<Decl> list =new ArrayList<>(); RESULT=list; :};
        /* empty */
+
+// Aggiungi questa nuova regola grammaticale
+IDefDecl ::= IDEF ID:id LPAR ParDecls:params RPAR Body:body
+             {: RESULT = new DefDecl(params, new Identifier(id), Type.INTEGER, body); :}
+         | IDEF ID:id LPAR RPAR Body:body
+             {: RESULT = new DefDecl(new Identifier(id), Type.INTEGER, body); :};
 
 VarDecls ::= VarDecls:list VarDecl:var{:list.add(var); RESULT=list;:}
             | {: ArrayList<VarDecl> list= new ArrayList<>(); RESULT=list; :};

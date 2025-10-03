@@ -47,15 +47,26 @@ char* bool2str(int b) {
     return ns;
 }
 
-int main() {
+int multiply_fun(int a, int b);
 char* primaryColor,*secondaryColor;
 
+int result;
+
+int multiply_fun(int a, int b){return a * b;
+}
+int main() {
 primaryColor = "red";
 
 secondaryColor = "blue";
 
 if(strcmp(primaryColor, "red") == 0)printf("%s", "Il colore primario e' rosso");
 printf("%s\n", secondaryColor);
+
+result = multiply_fun(5, 10);
+
+printf("%s", "Il risultato di 5*10 e': ");
+
+printf("%d\n", result);
 
     return 0;
 }
