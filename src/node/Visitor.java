@@ -36,6 +36,7 @@ public interface Visitor<T> {
     T visit(StringNode stringNode);
     T visit(TrueNode trueNode);
     T visit(FalseNode falseNode);
+    T visit(RgbNode rgbNode);
 
     // Istruzioni (Statements)
     T visit(AssignOp assignOp);

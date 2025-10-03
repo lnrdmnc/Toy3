@@ -455,6 +455,13 @@ public class ScopeVisitor implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(RgbNode rgbNode) {
+        TabellaDeiSimboli tabella = typeenv.peek();
+        rgbNode.setTabellaDeiSimboli(tabella);
+        return null;
+    }
+
     // --- VISITE PER GLI STATEMENT ---
 
     /**

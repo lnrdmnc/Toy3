@@ -438,6 +438,12 @@ public class TypeCheck implements Visitor {
         return falseNode.getType();
     }
 
+    @Override
+    public Object visit(RgbNode rgbNode) {
+        rgbNode.setType(Type.RGB);
+        return rgbNode.getType();
+    }
+
     // --- VISITE PER GLI STATEMENT ---
 
     /**
@@ -868,6 +874,27 @@ public class TypeCheck implements Visitor {
         }
         // STRING == STRING -> BOOLEAN
         else if (operator.equals("EQ") && (leftOperand.getType() == Type.STRING && rightOperand.getType() == Type.STRING)) {
+            return Type.BOOLEAN;
+        }
+
+        /*
+         * Questo blocco di codice 'if' viene aggiunto alla catena di controlli
+         * all'interno del metodo OpTypeChecker. Il suo scopo specifico è definire
+         * le regole semantiche per gli operatori di uguaglianza e disuguaglianza
+         * quando vengono applicati a operandi di tipo RGB.
+         */
+        if ((operator.equals("EQ") || operator.equals("NE")) && // PARTE 1: Controllo sull'operatore
+                leftOperand.getType() == Type.RGB &&                 // PARTE 2: Controllo sul tipo dell'operando sinistro
+                rightOperand.getType() == Type.RGB) {                // PARTE 3: Controllo sul tipo dell'operando destro
+
+            /*
+             * Se tutte e tre le condizioni precedenti sono vere, significa che l'espressione
+             * è semanticamente corretta (es. `myColor == red`).
+             * Il risultato di un'operazione di confronto è sempre un valore booleano
+             * (o vero o falso). Pertanto, il metodo "ritorna" il tipo BOOLEAN per
+             * comunicare al resto del TypeChecker che questa operazione binaria,
+             * nel suo complesso, produce un risultato di tipo booleano.
+             */
             return Type.BOOLEAN;
         }
 

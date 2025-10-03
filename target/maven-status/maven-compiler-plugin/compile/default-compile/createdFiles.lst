@@ -9,6 +9,7 @@ node/expr/constant/DoubleNode.class
 node/stat/WriteOp.class
 node/pardecl/ParDecl.class
 main/java/compiler/Lexer.class
+node/expr/constant/RgbNode.class
 node/defdecl/DefDecl.class
 node/expr/Expr.class
 node/stat/AssignOp.class
@@ -40,5 +41,6 @@ visitor/TypeCheck.class
 main/java/compiler/sym.class
 node/stat/IfThenNode.class
 node/program/ProgramOp.class
+node/RGB.class
 node/vardecl/VarInit.class
 node/ASTNode.class

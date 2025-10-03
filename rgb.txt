@@ -1,0 +1,16 @@
+program
+
+
+begin
+primaryColor | secondaryColor: rgb;
+
+primaryColor := red;
+secondaryColor := blue;
+
+if (primaryColor == red) then {
+        "Il colore primario e' rosso" >>;
+}
+
+secondaryColor !>>; // Stampa "blue"
+
+end

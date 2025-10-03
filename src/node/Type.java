@@ -9,6 +9,7 @@ public enum Type {
     DOUBLE,
     STRING,
     CHAR,
+    RGB,
     NOTYPE;
 
     public static Type getTypeFromExpr(Expr constant){

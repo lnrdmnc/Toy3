@@ -65,6 +65,11 @@ public class GeneratoreCodiceC implements Visitor {
         return "0";
     }
 
+    @Override
+    public Object visit(RgbNode rgbNode) {
+        return "\"" + rgbNode.getValue() + "\"";
+    }
+
     /**
      * Genera codice C per una costante stringa
      * @param stringNode nodo che rappresenta una stringa
@@ -373,6 +378,8 @@ public class GeneratoreCodiceC implements Visitor {
                     builder.append(varDecl.getVariables().get(i).accept(this)).append(",");
                 }
             }
+
+
         }
         builder.append(";\n");
         return builder.toString();
@@ -531,6 +538,7 @@ public class GeneratoreCodiceC implements Visitor {
             case CHAR: return "char";
             case DOUBLE: return "double";
             case INTEGER, BOOLEAN: return "int";
+            case RGB: return "char*";  // Rappresentato come stringa in C
             default: return "";
         }
     }
@@ -703,6 +711,12 @@ public class GeneratoreCodiceC implements Visitor {
         } else if (operator.equals("NE") && leftType == Type.STRING && rightType == Type.STRING) {
             return "strcmp(" + right.accept(this) + ", " + left.accept(this) + ") != 0";
         }
+        // Gestione del confronto tra valori RGB
+        else if (operator.equals("EQ") && leftType == Type.RGB && rightType == Type.RGB) { // <-- NUOVO BLOCCO
+            return "strcmp(" + left.accept(this) + ", " + right.accept(this) + ") == 0";
+        } else if (operator.equals("NE") && leftType == Type.RGB && rightType == Type.RGB) { // <-- NUOVO BLOCCO
+            return "strcmp(" + left.accept(this) + ", " + right.accept(this) + ") != 0";
+        }
         else {
             throw new RuntimeException("Operazione non supportata: " + operator + " con tipi " + leftType + " e " + rightType);
         }
@@ -778,6 +792,7 @@ public class GeneratoreCodiceC implements Visitor {
             case BOOLEAN: return "%d";
             case STRING: return "%s";
             case CHAR: return "%c";
+            case RGB: return "%s";  // Rappresentato come stringa in C
             default: return "";
         }
     }

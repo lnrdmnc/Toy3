@@ -27,11 +27,11 @@ import node.Stat;
 terminal            IF, THEN, ELSE;
 terminal            WHILE, DO, RETURN;
 terminal            REF, DEF;
-terminal            INT, BOOL, DOUBLE, STRING, CHAR;
+terminal            INT, BOOL, DOUBLE, STRING, CHAR,RGB;
 terminal            PROGRAM, BEGIN, END;
 
 /** Constants **/
-terminal            TRUE, FALSE;
+terminal            TRUE, FALSE,RED, GREEN, BLUE;
 terminal            int INT_CONST;
 terminal            double DOUBLE_CONST;
 terminal            char CHAR_CONST;
@@ -126,13 +126,18 @@ Type ::= INT {: RESULT=Type.INTEGER;:}
      | BOOL {:RESULT=Type.BOOLEAN;:}
      | DOUBLE {:RESULT=Type.DOUBLE;:}
      | STRING {:RESULT=Type.STRING;:}
-     | CHAR {:RESULT=Type.CHAR;:};
+     | CHAR {:RESULT=Type.CHAR;:}
+     | RGB {:RESULT=Type.RGB;:};
+
 Constant ::= TRUE {: RESULT = new TrueNode();:}
          | FALSE {: RESULT = new FalseNode();:}
          | INT_CONST:intt {: RESULT = new IntegerNode(intt);:}
          | DOUBLE_CONST:doublee{: RESULT = new DoubleNode(doublee);:}
          | CHAR_CONST:charr {: RESULT = new CharNode(charr);:}
-         | STRING_CONST:stringg {: RESULT = new StringNode(stringg);:};
+         | STRING_CONST:stringg {: RESULT = new StringNode(stringg);:}
+         | RED {: RESULT = new RgbNode("red");:}
+         | GREEN {: RESULT = new RgbNode("green");:}
+         | BLUE {: RESULT = new RgbNode("blue");:};
 
 DefDecl ::= DEF ID:id LPAR ParDecls:params RPAR OptType:type Body:body {: RESULT= new DefDecl(params, new Identifier(id),type,body); :}
         | DEF ID:id LPAR RPAR OptType:type Body:body{: RESULT= new DefDecl(new Identifier(id),type,body);:};
