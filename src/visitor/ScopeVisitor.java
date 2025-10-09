@@ -712,6 +712,17 @@ public class ScopeVisitor implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(MapOp mapOp) {
+        //accetto l'id
+        mapOp.getFunCallArrayList().forEach(map->map.accept(this));
+
+        // Associa la tabella corrente anche al MapNode stesso
+        mapOp.setTabellaDeiSimboli(typeenv.peek());
+        return null;
+
+    }
+
     // --- METODI DI UTILITÀ ---
 
     /**

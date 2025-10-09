@@ -1,0 +1,14 @@
+program
+
+def incrementa(n: int): int {
+    return n + 1;
+}
+
+y | x |z : int;
+begin
+y := 5;
+z := 10;
+x := map(ADD,incrementa,y,z);
+x >>;
+end
+

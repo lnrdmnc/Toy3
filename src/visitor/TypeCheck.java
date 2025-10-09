@@ -655,6 +655,25 @@ public class TypeCheck implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(MapOp mapNode) {
+
+        for (int i=0; i<mapNode.getFunCallArrayList().size(); i++) {
+            mapNode.getFunCallArrayList().get(i).accept(this);
+            if (mapNode.getFunCallArrayList().get(i).getArguments().size() != 1){
+                throw new RuntimeException("Errore di tipo: la funzione '" + mapNode.getFunCallArrayList().get(i).getId().getName() + "' deve accettare un solo argomento.");
+            }
+            if(mapNode.getFunCallArrayList().get(i).getArguments().get(0).getType() != Type.INTEGER ) {
+                throw new RuntimeException("Errore di tipo: la funzione '" + mapNode.getFunCallArrayList().get(i).getId().getName() + "' deve accettare un solo argomento.");
+            }
+            if (mapNode.getFunCallArrayList().get(i).getType() != Type.INTEGER) {
+                throw new RuntimeException("Errore di tipo: la funzione '" + mapNode.getFunCallArrayList().get(i).getId().getName() + "' deve accettare un argomento di tipo int.");
+            }
+        }
+        mapNode.setType(Type.INTEGER);
+        return mapNode.getType();
+    }
+
     /**
      * Visita una variabile parametro
      * Assegna il tipo dell'identificatore

@@ -9,33 +9,34 @@ package main.java.compiler;
 public interface sym {
   /* terminals */
   public static final int CHAR_CONST = 22;
-  public static final int ASSIGNDECL = 47;
+  public static final int MAP = 38;
+  public static final int ASSIGNDECL = 48;
   public static final int CHAR = 14;
   public static final int GE = 33;
   public static final int UMINUS = 28;
   public static final int DOUBLE_CONST = 21;
   public static final int DOUBLE = 12;
-  public static final int SEMI = 44;
+  public static final int SEMI = 45;
   public static final int INT = 10;
-  public static final int OUT = 50;
-  public static final int RBRAC = 41;
+  public static final int OUT = 53;
+  public static final int RBRAC = 42;
   public static final int MINUS = 25;
   public static final int REF = 8;
-  public static final int OUTNL = 51;
+  public static final int OUTNL = 54;
   public static final int NOT = 31;
   public static final int AND = 29;
   public static final int LT = 34;
-  public static final int RPAR = 39;
-  public static final int IN = 49;
+  public static final int RPAR = 40;
+  public static final int IN = 52;
   public static final int OR = 30;
-  public static final int COMMA = 43;
+  public static final int COMMA = 44;
   public static final int BOOL = 11;
   public static final int DIV = 27;
   public static final int BEGIN = 16;
   public static final int PLUS = 24;
-  public static final int ASSIGN = 45;
+  public static final int ASSIGN = 46;
   public static final int IF = 2;
-  public static final int ID = 48;
+  public static final int ID = 51;
   public static final int LE = 35;
   public static final int EOF = 0;
   public static final int RETURN = 7;
@@ -43,19 +44,21 @@ public interface sym {
   public static final int TRUE = 18;
   public static final int error = 1;
   public static final int PROGRAM = 15;
-  public static final int PIPE = 42;
+  public static final int MUL = 50;
+  public static final int PIPE = 43;
+  public static final int ADD = 49;
   public static final int EQ = 36;
   public static final int TIMES = 26;
-  public static final int COLON = 46;
+  public static final int COLON = 47;
   public static final int ELSE = 4;
   public static final int WHILE = 5;
   public static final int THEN = 3;
   public static final int NE = 37;
   public static final int END = 17;
-  public static final int LPAR = 38;
+  public static final int LPAR = 39;
   public static final int STRING = 13;
   public static final int DEF = 9;
-  public static final int LBRAC = 40;
+  public static final int LBRAC = 41;
   public static final int FALSE = 19;
   public static final int STRING_CONST = 23;
   public static final int GT = 32;
@@ -99,6 +102,7 @@ public interface sym {
   "LE",
   "EQ",
   "NE",
+  "MAP",
   "LPAR",
   "RPAR",
   "LBRAC",
@@ -109,6 +113,8 @@ public interface sym {
   "ASSIGN",
   "COLON",
   "ASSIGNDECL",
+  "ADD",
+  "MUL",
   "ID",
   "IN",
   "OUT",

@@ -535,6 +535,35 @@ public class GeneratoreCodiceC implements Visitor {
         }
     }
 
+    @Override
+    public String visit(MapOp mapNode) {
+        StringBuilder builder = new StringBuilder();
+
+        // Determina quale operatore C usare ("+" o "*") in base alla stringa salvata nel nodo.
+        // Assumiamo che MapOp abbia un metodo getOperator() che restituisce "ADD" o "MUL".
+        String operator = mapNode.getOp ().equals("ADD") ? " + " : " * ";
+
+        // Prendi la lista di nodi FunCall pre-costruiti.
+        List<FunCall> functionCalls = mapNode.getFunCallArrayList();
+
+        // Itera sulla lista per generare il codice per ogni chiamata.
+        for (int i = 0; i < functionCalls.size(); i++) {
+            FunCall funCall = functionCalls.get(i);
+
+            // Genera il codice C per la singola chiamata a funzione (es: "incrementa_fun(y)").
+            // Questo riutilizza la logica già esistente in visit(FunCall).
+            builder.append(funCall.accept(this));
+
+            // Se non è l'ultima chiamata nella lista, aggiungi l'operatore.
+            if (i < functionCalls.size() - 1) {
+                builder.append(operator);
+            }
+        }
+
+        // Restituisce la stringa C completa, es: "incrementa_fun(y) + incrementa_fun(5)"
+        return builder.toString();
+    }
+
     /**
      * Costruisce l'header del file C con include e funzioni di utility
      * @return stringa contenente l'header completo

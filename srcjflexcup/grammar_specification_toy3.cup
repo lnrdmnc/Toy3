@@ -41,12 +41,16 @@ terminal            STRING_CONST;
 terminal            PLUS, MINUS, TIMES, DIV, UMINUS;
 terminal            AND, OR, NOT;
 terminal            GT, GE, LT, LE, EQ, NE; //NE is missing in the syntactic specification
-
+terminal            MAP;
 /** Parenthesis & Symbols **/
 terminal            LPAR, RPAR, LBRAC, RBRAC;
 terminal            PIPE, COMMA;
 terminal            SEMI;
 terminal            ASSIGN, COLON, ASSIGNDECL;
+
+
+// Terminali per Map
+terminal           ADD,MUL;
 
 /** Identifiers **/
 terminal String ID;
@@ -70,6 +74,9 @@ non terminal  OptType;
 non terminal  TypeOrConstant;
 non terminal   Type Type;
 non terminal   Expr Constant;
+
+// operatore Op
+non terminal String MOp;
 
 /** List of variables **/
 non terminal ParDecl ParDecl;
@@ -153,6 +160,11 @@ OptType ::= COLON Type:ty {:RESULT=ty;:}
         | {:RESULT=null;:};
         /* empty */
 
+MOp ::= ADD {:RESULT="ADD";:}
+       | MUL {:RESULT="MUL";:};
+
+
+
 Body ::= LBRAC VarDecls:declarations Statements:statements RBRAC{: RESULT=new BodyOp(declarations,statements);:};
 
 //AGGIUNTA DEL NUOVO ELEMENTO IN TESTA E NON IN CODA
@@ -195,6 +207,14 @@ FunCall ::= ID:id_attrib LPAR Exprs:ref RPAR {:RESULT = new FunCall(new Identifi
               | NOT Expr:e1   {:RESULT=new UnaryOp("NOT",e1);:}
               | ID:id         {:RESULT=new Identifier(id);:}
               // Funcall utilizzate nelle espressione
-              | FunCall:e1  {:RESULT=e1;:}
-              | Constant:e1 {:RESULT=e1;:};
+              | FunCall:e1  {:RESULT=e1; :}
+              | Constant:e1 {:RESULT=e1; :}
+              | MAP LPAR MOp:op COMMA ID:fun COMMA Exprs:args RPAR {:ArrayList<FunCall> funCallArrayList= new ArrayList<>();
+                                                                        for (int i=0; i<args.size(); i++){
+                                                                            ArrayList<Expr> argList = new ArrayList<Expr>();
+                                                                            argList.add(args.get(i));
+                                                                            funCallArrayList.add(new FunCall(new Identifier(fun), argList));
+                                                                        }
+                                                                        RESULT=new MapOp(op, funCallArrayList);
+                                                                        :};
 
