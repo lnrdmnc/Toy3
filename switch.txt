@@ -1,0 +1,51 @@
+program
+
+// Definiamo una funzione che simula un'operazione
+// e restituisce un codice di stato.
+def eseguiOperazione(val: int): int
+{
+    // Dichiarazioni locali alla funzione (qui non ne servono)
+
+    // Se il valore è negativo, restituisce errore 1
+    if (val < 0) then {
+        return 1;
+    }
+
+    // Se il valore è sopra 100, restituisce errore 2
+    if (val > 100) then {
+        return 2;
+    }
+
+    // Altrimenti, l'operazione ha successo
+    return 0;
+}
+
+begin
+    // Dichiarazioni nel main
+    codiceStato : int;
+    inputValore : int;
+
+    "Inserisci un valore per l'operazione: " >>;
+    inputValore <<; // Leggiamo un valore da tastiera
+
+    // Chiamiamo la funzione e salviamo il suo codice di stato
+    codiceStato := eseguiOperazione(inputValore);
+
+    "Risultato dell'operazione: " >>;
+
+    // Usiamo lo switch per interpretare il codice di stato
+    switch (codiceStato)
+    {
+        case 0:
+            "Successo! L'operazione è andata a buon fine." !>>;
+
+        case 1:
+            "Errore: Il valore inserito non può essere negativo." !>>;
+
+        case 2:
+            "Errore: Il valore inserito è troppo grande (maggiore di 100)." !>>;
+
+        default:
+            "Errore: Si è verificato un problema sconosciuto." !>>;
+    }
+end

@@ -42,6 +42,8 @@ terminal            PLUS, MINUS, TIMES, DIV, UMINUS;
 terminal            AND, OR, NOT;
 terminal            GT, GE, LT, LE, EQ, NE; //NE is missing in the syntactic specification
 
+terminal           SWITCH;
+terminal           CASE, DEFAULT;
 /** Parenthesis & Symbols **/
 terminal            LPAR, RPAR, LBRAC, RBRAC;
 terminal            PIPE, COMMA;
@@ -84,6 +86,12 @@ non terminal ArrayList<Decl> Decls;
 non terminal ArrayList<Identifier> Vars;
 non terminal ParVar PVar;
 non terminal ArrayList<ParVar> PVars;
+
+// Costrutti per switch
+non terminal SwitchOp SwitchStat;
+non terminal CaseOp CaseOp;
+non terminal ArrayList<CaseOp> CaseList;
+non terminal CaseOp DefaultClause;
 
 /* Precedences */
 precedence left OR;
@@ -167,7 +175,22 @@ Stat ::= Vars:vars_list IN SEMI {:RESULT= new ReadOp(vars_list);:}
     | IF LPAR Expr:expression RPAR THEN Body:ifBody{: RESULT= new IfThenNode(expression,ifBody);:}
     | IF LPAR Expr:expression RPAR THEN Body:ifBody ELSE Body:elseBody {:RESULT= new IfThenElse(expression,ifBody,elseBody);:}
     | WHILE LPAR Expr:expression RPAR DO Body:whileBody{:RESULT= new WhileOp(expression,whileBody);:}
-    | RETURN Expr:exp SEMI{:RESULT=new ReturnStat(exp);:};
+    | RETURN Expr:exp SEMI{:RESULT=new ReturnStat(exp);:}
+    | SwitchStat:sw {: RESULT = sw;:};
+
+
+SwitchStat::= SWITCH LPAR Expr:expr RPAR LBRAC CaseList:casel RBRAC{:RESULT=new SwitchOp(expr,casel,null);:}
+ // Versione con default
+ | SWITCH LPAR Expr:e RPAR LBRAC CaseList:cl DefaultClause:dc RBRAC
+               {: RESULT = new SwitchOp(e, cl, dc); :};
+
+CaseList::= CaseOp:casel CaseList:list {:list.add(0,casel);RESULT=list;:}
+            | {: RESULT = new ArrayList<CaseOp>(); :}; // Lista vuota;
+
+CaseOp ::= CASE INT_CONST:c COLON  Statements:s  {: RESULT=new CaseOp(new IntegerNode(c),s);:};
+
+// regola DefaultClause gestisce il default
+DefaultClause ::= DEFAULT COLON  Statements:s  {: RESULT = new CaseOp(null, s); :};
 
 Vars ::= ID:id_attr PIPE Vars:list {: list.add(new Identifier(id_attr)); RESULT = list;:}
      | ID:id_attrib {:ArrayList<Identifier> list = new ArrayList<Identifier>(); list.add(new Identifier(id_attrib)); RESULT = list;:};

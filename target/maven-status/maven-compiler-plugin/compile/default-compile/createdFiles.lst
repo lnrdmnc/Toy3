@@ -2,10 +2,12 @@ visitor/utils/RigaTabellaDeiSimboli.class
 node/expr/constant/IntegerNode.class
 node/stat/ReturnStat.class
 node/expr/constant/CharNode.class
+Test.class
 main/java/compiler/Parser$CUP$Parser$actions.class
 node/expr/operation/UnaryOp.class
 node/pardecl/ParVar.class
 node/expr/constant/DoubleNode.class
+node/stat/SwitchOp.class
 node/stat/WriteOp.class
 node/pardecl/ParDecl.class
 main/java/compiler/Lexer.class
@@ -31,6 +33,7 @@ node/vardecl/VarDecl.class
 node/Visitor.class
 visitor/utils/TipoFunzione.class
 node/expr/constant/FalseNode.class
+node/stat/CaseOp.class
 node/Type.class
 node/body/BodyOp.class
 node/stat/IfThenElse.class

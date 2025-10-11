@@ -429,6 +429,54 @@ public class GeneratoreCodiceC implements Visitor {
         return builder.toString();
     }
 
+    // --- GESTIONE DELLE ISTRUZIONI SWITCH-CASE ---
+    @Override
+    public String visit(SwitchOp switchOp) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("switch (").append(switchOp.getExpr().accept(this)).append(") {\n");
+        // 1. Genera il codice per tutti i case
+        // Itera al contrario perché la grammatica aggiunge in testa
+        ArrayList<CaseOp> cases = switchOp.getCaseList();
+        for (int i = cases.size() - 1; i >= 0; i--) {
+            sb.append(cases.get(i).accept(this));
+        }
+
+        // 2. Genera il codice per il default se esiste
+        if (switchOp.getDefaultCase() != null) {
+            sb.append(switchOp.getDefaultCase().accept(this));
+        }
+
+        sb.append("}\n");
+        return sb.toString();
+    }
+
+    @Override
+    public String visit(CaseOp caseOp) {
+        StringBuilder sb = new StringBuilder();
+
+        if (caseOp.getCaseExpr() == null) {
+            sb.append("default:\n");
+        } else {
+            sb.append("case ").append(caseOp.getCaseExpr().accept(this)).append(":\n");
+        }
+
+        sb.append("{\n");
+        // Itera al contrario anche qui
+        ArrayList<Stat> statements = caseOp.getStatements();
+        for (int i = statements.size() - 1; i >= 0; i--) {
+            String statCode = (String) statements.get(i).accept(this);
+            sb.append(statCode);
+            // Aggiungi il punto e virgola se necessario (es. FunCall)
+            if (statements.get(i) instanceof FunCall) {
+                sb.append(";\n");
+            }
+        }
+        sb.append("break;\n");
+        sb.append("}\n");
+        return sb.toString();
+    }
+
+
     // --- GESTIONE DEL CORPO DEL PROGRAMMA ---
 
     /**

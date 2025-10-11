@@ -711,6 +711,26 @@ public class ScopeVisitor implements Visitor {
 
         return null;
     }
+    // --- VISITE PER SWITCH-CASE ---
+    @Override
+    public Object visit(SwitchOp switchOp) {
+        switchOp.getExpr().accept(this);
+        for (CaseOp co : switchOp.getCaseList()) {
+            co.accept(this);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(CaseOp caseOp) {
+        if (caseOp.getCaseExpr() != null) {
+            caseOp.getCaseExpr().accept(this);
+        }
+        for (Stat s : caseOp.getStatements()) {
+            s.accept(this);
+        }
+        return null;
+    }
 
     // --- METODI DI UTILITÀ ---
 

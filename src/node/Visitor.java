@@ -48,5 +48,7 @@ public interface Visitor<T> {
     T visit(ParDecl parDecl);
     T visit(ParVar parVar);
     T visit(BodyOp bodyOp);
+    T visit(CaseOp caseOp);
+    T visit(SwitchOp switchOp);
 
 }

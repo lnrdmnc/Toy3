@@ -699,6 +699,55 @@ public class TypeCheck implements Visitor {
         typeenv.pop();
         return bodyOp.getType();
     }
+    // --- METODI DI CONTROLLO TIPI PER SWITCH-CASE ---
+    @Override
+    public Object visit(SwitchOp switchOp) {
+        Type exprType = (Type) switchOp.getExpr().accept(this);
+        if (exprType != Type.INTEGER) {
+            throw new RuntimeException("Switch expression must be an integer, but found " + exprType);
+        }
+
+        boolean hasDefault = false;
+        ArrayList<Integer> caseValues = new ArrayList<>();
+        // 1. Controlla tutti i case nella caseList
+        for (CaseOp co : switchOp.getCaseList()) {
+            if (co.getCaseExpr() == null) { // Caso default
+                if (hasDefault) {
+                    throw new RuntimeException("Multiple default clauses in switch statement.");
+                }
+                hasDefault = true;
+            } else { // Caso con valore
+                // Controlla che il valore del case sia una costante intera
+                if (!(co.getCaseExpr() instanceof IntegerNode)) {
+                    throw new RuntimeException("Case label must be an integer constant.");
+                }
+                IntegerNode constNode = (IntegerNode) co.getCaseExpr();
+                int val = (Integer) constNode.getValue();
+                if (caseValues.contains(val)) {
+                    throw new RuntimeException("Duplicate case value: " + val);
+                }
+                caseValues.add(val);
+            }
+            co.accept(this); // Visita il corpo del case
+        }
+        // 2. Controlla il caso default se esiste
+        if (switchOp.getDefaultCase() != null) {
+            switchOp.getDefaultCase().accept(this);
+        }
+
+        switchOp.setType(Type.NOTYPE);
+        return switchOp.getType();
+    }
+
+    @Override
+    public Object visit(CaseOp caseOp) {
+        // Esegui il type check per ogni statement nel blocco
+        for (Stat s : caseOp.getStatements()) {
+            s.accept(this);
+        }
+        // CaseOp non ha un tipo di ritorno, quindi non impostiamo nulla.
+        return null;
+    }
 
     // --- METODI DI UTILITÀ PER LA RICERCA NELLE TABELLE DEI SIMBOLI ---
 
