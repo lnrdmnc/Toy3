@@ -1,0 +1,6 @@
+program
+  risultato: int;
+begin
+  risultato := let y : 5; given y := y + 1; is y * 10;
+  "Risultato: ", risultato !>>;
+end

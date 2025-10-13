@@ -7,6 +7,7 @@ import node.body.BodyOp;
 import node.defdecl.Decl;
 import node.defdecl.DefDecl;
 import node.expr.Expr;
+import node.expr.LetExprOp;
 import node.expr.constant.*;
 import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
@@ -709,6 +710,63 @@ public class ScopeVisitor implements Visitor {
         bodyOp.setTabellaDeiSimboli(bodyTable);
         typeenv.pop(); // Chiude lo scope del corpo
 
+        return null;
+    }
+
+    // Questo metodo viene chiamato quando il visitor incontra un nodo LetExprOp.
+    @Override
+    public Object visit(LetExprOp op) {
+        // 1. CREAZIONE DELLO SCOPE LOCALE
+        // Creiamo una nuova Tabella dei Simboli dedicata esclusivamente a questo blocco 'let'.
+        // È un "recinto" che conterrà le variabili locali.
+        TabellaDeiSimboli letTable = new TabellaDeiSimboli("LET_SCOPE");
+
+        // "Entriamo" nel nuovo recinto. Da questo momento in poi, ogni nuova dichiarazione
+        // o ricerca di variabile avverrà prima in questo scope.
+        typeenv.push(letTable);
+
+        // Colleghiamo la tabella appena creata direttamente al nodo dell'AST.
+        // Questo è FONDAMENTALE perché il TypeChecker, in una fase successiva,
+        // dovrà recuperare e usare esattamente questa tabella.
+        op.setTabellaDeiSimboli(letTable);
+
+        // 2. POPOLAMENTO DELLO SCOPE
+        // Se ci sono dichiarazioni di variabili nel 'let'...
+        if (op.getDeclarations() != null) {
+            for (VarDecl decl : op.getDeclarations()) {
+                // ...per ogni variabile dichiarata, determiniamo il suo tipo...
+                Firma type;
+                if (decl.getType() == null) { // Tipo inferito da un valore costante
+                    type = new FirmaVariabile(decl.getCostant());
+                } else { // Tipo dichiarato esplicitamente
+                    type = new FirmaVariabile(decl.getType());
+                }
+
+                // ...e la registriamo nella nostra tabella locale (il "recinto").
+                for (VarInit var : decl.getVariables()) {
+                    letTable.aggiungiRiga(new RigaTabellaDeiSimboli(var.getId().getName(), "variable", type));
+                }
+
+                // Continuiamo la visita ricorsiva. Questo è importante se una dichiarazione
+                // usa altre variabili, es. `a: int = b + 2;`
+                decl.accept(this);
+            }
+        }
+
+        // 3. VISITA DEI FIGLI DENTRO LO SCOPE
+        // Ora che lo scope è pronto, visitiamo il corpo 'given' e l'espressione 'is'.
+        // Qualsiasi variabile usata qui dentro verrà cercata prima nel nostro "recinto".
+        for (Stat stat : op.getGivenBody()) {
+            stat.accept(this);
+        }
+        op.getIsExpr().accept(this);
+
+        // 4. DISTRUZIONE DELLO SCOPE
+        // Abbiamo finito di analizzare il 'let'. "Usciamo" dal recinto.
+        // Le variabili dichiarate qui dentro non saranno più accessibili.
+        typeenv.pop();
+
+        // Lo ScopeVisitor non deve restituire un valore, il suo lavoro è modificare l'AST.
         return null;
     }
 

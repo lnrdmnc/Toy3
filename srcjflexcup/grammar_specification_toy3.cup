@@ -47,6 +47,7 @@ terminal            LPAR, RPAR, LBRAC, RBRAC;
 terminal            PIPE, COMMA;
 terminal            SEMI;
 terminal            ASSIGN, COLON, ASSIGNDECL;
+terminal            LET,GIVEN, IS;
 
 /** Identifiers **/
 terminal String ID;
@@ -178,7 +179,8 @@ Exprs ::= Expr:attrib COMMA Exprs:list {: list.add((Expr) attrib); RESULT = list
 FunCall ::= ID:id_attrib LPAR Exprs:ref RPAR {:RESULT = new FunCall(new Identifier(id_attrib), ref);:}
         | ID:id_attrib LPAR RPAR {:RESULT = new FunCall(new Identifier(id_attrib));:};
 
-    Expr ::= Expr:e1 PLUS Expr:e2       {:RESULT = new BinaryOp(e1,"PLUS",e2);:}
+    Expr ::= LET VarDecls:v GIVEN Statements:s IS Expr:e {: RESULT = new LetExprOp(v,s,e);:}
+              | Expr:e1 PLUS Expr:e2       {:RESULT = new BinaryOp(e1,"PLUS",e2);:}
               | Expr:e1 MINUS Expr:e2       {:RESULT = new BinaryOp(e1,"MINUS",e2);:}
               | Expr:e1 TIMES Expr:e2       {:RESULT = new BinaryOp(e1,"TIMES",e2);:}
               | Expr:e1 DIV Expr:e2       {:RESULT = new BinaryOp(e1,"DIV",e2);:}

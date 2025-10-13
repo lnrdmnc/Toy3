@@ -2,6 +2,7 @@
 package node;
 
 import node.defdecl.*;
+import node.expr.LetExprOp;
 import node.expr.constant.*;
 import node.expr.operation.*;
 import node.vardecl.*;
@@ -48,5 +49,6 @@ public interface Visitor<T> {
     T visit(ParDecl parDecl);
     T visit(ParVar parVar);
     T visit(BodyOp bodyOp);
+    T visit(LetExprOp letExprOp);
 
 }

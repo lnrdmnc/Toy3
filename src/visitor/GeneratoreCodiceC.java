@@ -8,6 +8,7 @@ import node.body.BodyOp;
 import node.defdecl.Decl;
 import node.defdecl.DefDecl;
 import node.expr.Expr;
+import node.expr.LetExprOp;
 import node.expr.constant.*;
 import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
@@ -457,6 +458,55 @@ public class GeneratoreCodiceC implements Visitor {
         return builder.toString();
     }
 
+    // --- GESTIONE DELLE ESPRESSIONI 'LET' ---
+// Servono per collezionare le funzioni di supporto generate per i 'let'.
+    private StringBuilder letFunctions = new StringBuilder();
+    private int letFunctionCounter = 0; // Garantisce che ogni funzione 'let' abbia un nome unico.
+
+// ...
+
+    // Questo metodo viene chiamato quando il visitor incontra un nodo LetExprOp nell'AST.
+    @Override
+    public String visit(LetExprOp op) {
+        // 1. Incrementa il contatore per creare un nome di funzione unico (es. __let_expression_1, __let_expression_2, etc.).
+        letFunctionCounter++;
+        String functionName = "__let_expression_" + letFunctionCounter;
+
+        // 2. Recupera il tipo di ritorno del 'let', che il TypeChecker ha già calcolato e salvato nel nodo.
+        Type returnType = op.getType();
+
+        // 3. Inizia a costruire la stringa che definisce la funzione C di supporto.
+        //    Es: "int __let_expression_1() {\n"
+        letFunctions.append(getCType(returnType)).append(" ").append(functionName).append("() {\n");
+
+        // 4. Genera il codice C per le dichiarazioni di variabili all'interno del 'let'.
+        //    Questo crea lo scope locale della funzione.
+        for (VarDecl decl : op.getDeclarations()) {
+            letFunctions.append(indent((String) decl.accept(this), 1));
+        }
+
+        // 5. Genera il codice C per gli statements all'interno del blocco 'given'.
+        for (Stat stat : op.getGivenBody()) {
+            letFunctions.append(indent((String) stat.accept(this), 1));
+        }
+
+        // 6. Genera l'istruzione di ritorno della funzione C. Il valore restituito
+        //    è il risultato della valutazione dell'espressione nel blocco 'is'.
+        letFunctions.append(indent("return " + op.getIsExpr().accept(this) + ";\n", 1));
+
+        // 7. Chiude la definizione della funzione C.
+        letFunctions.append("}\n\n");
+
+        // 8. IMPORTANTE: Questo metodo NON restituisce il corpo della funzione.
+        //    Restituisce solo una stringa che rappresenta la CHIAMATA a quella funzione.
+        //    Es: "__let_expression_1()"
+        //    Questo permette di inserire il risultato del 'let' in qualsiasi punto del codice,
+        //    come ad esempio `risultato = __let_expression_1();`.
+        return functionName + "()";
+    }
+
+
+
     // --- GESTIONE DEL PROGRAMMA PRINCIPALE ---
 
     /**
@@ -483,23 +533,37 @@ public class GeneratoreCodiceC implements Visitor {
             }
         }
 
-        // Genera la funzione main
-        builder.append("int main() {\n");
+        // Crea un buffer temporaneo per generare il codice del blocco 'main'.
+        // Durante la visita degli statements del main, verranno chiamati i metodi `visit`
+        // per ogni nodo, incluso `visit(LetExprOp)`, che popolerà il nostro buffer `letFunctions`.
+        StringBuilder mainCode = new StringBuilder();
         if (programOp.getVarDeclarations() != null) {
             for (Decl decl : programOp.getVarDeclarations()) {
-                builder.append(decl.accept(this)).append("\n");
+                mainCode.append(indent((String) decl.accept(this), 1));
             }
         }
         if (programOp.getStatements() != null) {
             for (Stat stmt : programOp.getStatements()) {
-                builder.append(stmt.accept(this)).append("\n");
-                if (stmt instanceof FunCall) {
-                    builder.append(";");
-                }
+                mainCode.append(indent((String) stmt.accept(this), 1));
             }
         }
+
+        // Ora che abbiamo visitato tutto e `letFunctions` è pieno, possiamo assemblare il file finale.
+        // 1. Aggiungi le funzioni di supporto generate per i 'let'. Vanno PRIMA del main.
+        builder.append(letFunctions.toString());
+
+
+        // 2. Aggiungi la funzione main.
+        builder.append("int main() {\n");
+
+        // 3. Inserisci il codice del blocco main che abbiamo generato nel buffer.
+        builder.append(mainCode.toString());
+
+        // 4. Aggiungi il return finale e chiudi il main.
         builder.append("    return 0;\n");
         builder.append("}\n");
+
+        // Restituisci il codice C completo.
         return builder.toString();
     }
 

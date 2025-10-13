@@ -9,6 +9,7 @@ import node.body.BodyOp;
 import node.defdecl.Decl;
 import node.defdecl.DefDecl;
 import node.expr.Expr;
+import node.expr.LetExprOp;
 import node.expr.constant.*;
 import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
@@ -698,6 +699,45 @@ public class TypeCheck implements Visitor {
         bodyOp.setType(Type.NOTYPE);
         typeenv.pop();
         return bodyOp.getType();
+    }
+
+    // Questo metodo viene chiamato quando il visitor incontra un nodo LetExprOp.
+    @Override
+    public Object visit(LetExprOp op) {
+        // 1. ATTIVAZIONE DELLO SCOPE
+        // Recuperiamo la tabella dei simboli che lo ScopeVisitor ha precedentemente
+        // creato e collegato a questo nodo, e la impostiamo come scope attivo.
+        typeenv.push(op.getTabellaDeiSimboli());
+
+        // 2. CONTROLLO DEI TIPI DEI FIGLI
+        // Visitiamo ricorsivamente tutte le parti interne del 'let' per assicurarci
+        // che siano corrette dal punto di vista dei tipi. Per esempio, controlliamo
+        // che in `a: int = "ciao";` i tipi non siano compatibili.
+        for (VarDecl decl : op.getDeclarations()) {
+            decl.accept(this);
+        }
+        for (Stat stat : op.getGivenBody()) {
+            stat.accept(this);
+        }
+
+        // 3. CALCOLO DEL TIPO DI RITORNO
+        // Il tipo dell'intera espressione 'let' è determinato dal tipo dell'espressione
+        // nel blocco 'is'. Visitiamo questo sotto-nodo e catturiamo il tipo che restituisce.
+        Type resultType = (Type) op.getIsExpr().accept(this);
+
+        // 4. USCITA DALLO SCOPE
+        // Abbiamo finito di controllare i tipi all'interno del 'let', quindi
+        // ripristiniamo lo scope precedente.
+        typeenv.pop();
+
+        // 5. MARCATURA E RESTITUZIONE DEL TIPO
+        // "Marchiamo" il nodo LetExprOp con il tipo che abbiamo appena calcolato.
+        // Questo sarà utile per il CodeGenerator e per chi ha chiamato questa visita
+        // (es. un AssignOp che deve controllare la compatibilità).
+        op.setType(resultType);
+
+        // Restituiamo il tipo calcolato.
+        return resultType;
     }
 
     // --- METODI DI UTILITÀ PER LA RICERCA NELLE TABELLE DEI SIMBOLI ---
