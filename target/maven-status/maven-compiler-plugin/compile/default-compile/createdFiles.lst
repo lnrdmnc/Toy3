@@ -2,6 +2,7 @@ visitor/utils/RigaTabellaDeiSimboli.class
 node/expr/constant/IntegerNode.class
 node/stat/ReturnStat.class
 node/expr/constant/CharNode.class
+Test.class
 main/java/compiler/Parser$CUP$Parser$actions.class
 node/expr/operation/UnaryOp.class
 node/pardecl/ParVar.class
@@ -40,5 +41,6 @@ visitor/TypeCheck.class
 main/java/compiler/sym.class
 node/stat/IfThenNode.class
 node/program/ProgramOp.class
+node/stat/CascadeForOp.class
 node/vardecl/VarInit.class
 node/ASTNode.class

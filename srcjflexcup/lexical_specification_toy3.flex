@@ -80,6 +80,10 @@ CharC = '[^\\[ntbrf\\\'\"]]' | {EscChar}
 <YYINITIAL> "program" { return symbol(sym.PROGRAM); }
 <YYINITIAL> "begin" { return symbol(sym.BEGIN); }
 <YYINITIAL> "end" { return symbol(sym.END); }
+<YYINITIAL> "cascade" { return symbol(sym.CASCADE); }
+<YYINITIAL> "for" { return symbol(sym.FOR); }
+<YYINITIAL> "update" { return symbol(sym.UPDATE); }
+
 
 <YYINITIAL> {
 

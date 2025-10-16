@@ -584,6 +584,45 @@ public class ScopeVisitor implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(CascadeForOp cascadeForOp) {
+        // 1️⃣ crea una nuova tabella per lo scope del cascade
+        TabellaDeiSimboli tabella = new TabellaDeiSimboli("CASCADE-FOR");
+        typeenv.push(tabella);
+
+        // assegna la tabella al nodo
+        cascadeForOp.setTabellaDeiSimboli(tabella);
+
+        // visita le assegnazioni iniziali
+        if (cascadeForOp.getInitExpr() != null) {
+            for (AssignOp a : cascadeForOp.getInitExpr()) {
+                a.accept(this);
+            }
+        }
+
+        // visita la condizione booleana
+        if (cascadeForOp.getCondExpr() != null) {
+            cascadeForOp.getCondExpr().accept(this);
+        }
+
+        // visita le assegnazioni di update
+        if (cascadeForOp.getUpdateExpr() != null) {
+            for (AssignOp a : cascadeForOp.getUpdateExpr()) {
+                a.accept(this);
+            }
+        }
+
+        // visita il corpo del ciclo (nuovo BodyOp)
+        if (cascadeForOp.getBody() != null) {
+            cascadeForOp.getBody().accept(this);
+        }
+
+        // chiude lo scope
+        typeenv.pop();
+
+        return null;
+    }
+
     /**
      * Visita un ciclo while
      * Crea un nuovo scope per il corpo del ciclo e visita condizione e corpo

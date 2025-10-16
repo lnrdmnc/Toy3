@@ -700,6 +700,19 @@ public class TypeCheck implements Visitor {
         return bodyOp.getType();
     }
 
+    @Override
+    public Object visit(CascadeForOp node) {
+        for (AssignOp a : node.getInitExpr()) a.accept(this);
+        Type condType = (Type) node.getCondExpr().accept(this);
+        if (condType != Type.BOOLEAN)
+            throw new RuntimeException("Cascade condition must be boolean");
+        for (AssignOp a : node.getUpdateExpr()) a.accept(this);
+        node.getBody().accept(this);
+        node.setType(Type.NOTYPE);
+        return Type.NOTYPE;
+    }
+
+
     // --- METODI DI UTILITÀ PER LA RICERCA NELLE TABELLE DEI SIMBOLI ---
 
     /**

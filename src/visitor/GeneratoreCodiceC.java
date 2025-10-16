@@ -457,6 +457,23 @@ public class GeneratoreCodiceC implements Visitor {
         return builder.toString();
     }
 
+    @Override
+    public String visit(CascadeForOp node) {
+        StringBuilder sb = new StringBuilder();
+
+        for (AssignOp a : node.getInitExpr()) sb.append(a.accept(this));
+        sb.append("for(; ")
+                .append(node.getCondExpr().accept(this))
+                .append("; ");
+        for (int i = 0; i < node.getUpdateExpr().size(); i++) {
+            sb.append(node.getUpdateExpr().get(i).accept(this).toString().replace(";\n", ""));
+            if (i < node.getUpdateExpr().size() - 1) sb.append(", ");
+        }
+        sb.append(")\n").append(node.getBody().accept(this));
+        return sb.toString();
+    }
+
+
     // --- GESTIONE DEL PROGRAMMA PRINCIPALE ---
 
     /**

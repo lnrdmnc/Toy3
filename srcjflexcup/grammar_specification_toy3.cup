@@ -47,6 +47,7 @@ terminal            LPAR, RPAR, LBRAC, RBRAC;
 terminal            PIPE, COMMA;
 terminal            SEMI;
 terminal            ASSIGN, COLON, ASSIGNDECL;
+terminal            CASCADE, FOR, UPDATE;
 
 /** Identifiers **/
 terminal String ID;
@@ -84,6 +85,8 @@ non terminal ArrayList<Decl> Decls;
 non terminal ArrayList<Identifier> Vars;
 non terminal ParVar PVar;
 non terminal ArrayList<ParVar> PVars;
+non terminal ArrayList<AssignOp> Assigns;
+
 
 /* Precedences */
 precedence left OR;
@@ -167,6 +170,7 @@ Stat ::= Vars:vars_list IN SEMI {:RESULT= new ReadOp(vars_list);:}
     | IF LPAR Expr:expression RPAR THEN Body:ifBody{: RESULT= new IfThenNode(expression,ifBody);:}
     | IF LPAR Expr:expression RPAR THEN Body:ifBody ELSE Body:elseBody {:RESULT= new IfThenElse(expression,ifBody,elseBody);:}
     | WHILE LPAR Expr:expression RPAR DO Body:whileBody{:RESULT= new WhileOp(expression,whileBody);:}
+    | CASCADE LPAR Assigns:in RPAR FOR LPAR Expr:cond RPAR UPDATE LPAR Assigns:up RPAR Body:body {: RESULT = new CascadeForOp(in, cond, up, body); :}
     | RETURN Expr:exp SEMI{:RESULT=new ReturnStat(exp);:};
 
 Vars ::= ID:id_attr PIPE Vars:list {: list.add(new Identifier(id_attr)); RESULT = list;:}
@@ -198,3 +202,8 @@ FunCall ::= ID:id_attrib LPAR Exprs:ref RPAR {:RESULT = new FunCall(new Identifi
               | FunCall:e1  {:RESULT=e1;:}
               | Constant:e1 {:RESULT=e1;:};
 
+
+Assigns ::= Vars:vars_list ASSIGN Exprs:exprs SEMI Assigns:list{: list.add(0, new AssignOp(vars_list, exprs)); RESULT = list; :}
+        | Vars:vars_list ASSIGN Exprs:exprs{: java.util.ArrayList<AssignOp> list = new java.util.ArrayList<>();
+             list.add(new AssignOp(vars_list, exprs)); RESULT = list; :}
+        | /* empty */{: java.util.ArrayList<AssignOp> list = new java.util.ArrayList<>(); RESULT = list; :};
