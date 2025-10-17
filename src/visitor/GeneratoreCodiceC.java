@@ -154,7 +154,7 @@ public class GeneratoreCodiceC implements Visitor {
         // 1) prima il nome
         builder.append(identifier.getName());
 
-        if (identifier.hasIndex()) {           //  aggiungi questo
+        if (identifier.hasIndex()) {
             builder.append("[")
                     .append(identifier.getIndex())
                     .append("]");
@@ -426,26 +426,14 @@ public class GeneratoreCodiceC implements Visitor {
     public String visit(ParDecl parDecl) {
         StringBuilder builder = new StringBuilder();
         int size = parDecl.getVariables().size() - 1;
-        String ref = "";
-        ParVar variable;
-
-        // Genera la lista dei parametri in ordine inverso
-        for (int i = size; i >= 0; i--) {
-            variable = parDecl.getVariables().get(i);
-            if (i == 0) {
-                builder.append(getCType(parDecl.getType())).append(" ").append(ref).append(variable.accept(this));
-            } else {
-                builder.append(getCType(parDecl.getType())).append(" ").append(ref).append(variable.accept(this)).append(",");
-            }
-        }
 
         for (int i = size; i >= 0; i--) {
-            variable = parDecl.getVariables().get(i);
+            ParVar variable = parDecl.getVariables().get(i);
             String name = (String) variable.accept(this);
 
             String oneParam;
             if (parDecl.getType() == Type.ARRAY) {
-                // Scegli il tipo elemento dell’array per i parametri (default: int)
+                // TODO: se conosci il tipo elemento reale, sostituisci Type.INTEGER con quello
                 String elemCtype = getCType(Type.INTEGER);
                 oneParam = elemCtype + " *" + name;
             } else {
@@ -453,10 +441,11 @@ public class GeneratoreCodiceC implements Visitor {
             }
 
             builder.append(oneParam);
-            if (i > 0) builder.append(",");
+            if (i > 0) builder.append(", ");
         }
         return builder.toString();
     }
+
 
     /**
      * Genera codice C per una variabile parametro
