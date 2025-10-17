@@ -47,8 +47,8 @@ char* bool2str(int b) {
     return ns;
 }
 
-void sommac_fun(double a, double d, double b, char* *size, double *result);
-char* stampa_fun(char* messaggio);
+void sommac_fun(double adouble a, double ddouble d, double bdouble b, char* *sizechar* *size, double *resultdouble *result);
+char* stampa_fun(char* messaggiochar* messaggio);
 int c = 1;
 
 double a,b,x;
@@ -57,12 +57,12 @@ char* taglia,*ans1,*ans;
 
 double risultato;
 
-void sommac_fun(double a, double d, double b, char* *size, double *result){*result = a + b + c + d;
+void sommac_fun(double adouble a, double ddouble d, double bdouble b, char* *sizechar* *size, double *resultdouble *result){*result = a + b + c + d;
 if(*result > 100){*size = "grande";
 }else{if(*result > 50){*size = "media";
 }else{*size = "piccola";
 }}}
-char* stampa_fun(char* messaggio){int i = 0;
+char* stampa_fun(char* messaggiochar* messaggio){int i = 0;
 while (i < 4){printf("%s\n", "");
 i = i + 1;
 }printf("%s\n", messaggio);

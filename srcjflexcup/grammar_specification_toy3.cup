@@ -43,7 +43,7 @@ terminal            AND, OR, NOT;
 terminal            GT, GE, LT, LE, EQ, NE; //NE is missing in the syntactic specification
 
 /** Parenthesis & Symbols **/
-terminal            LPAR, RPAR, LBRAC, RBRAC;
+terminal            LPAR, RPAR, LBRAC, RBRAC, LSQUARE, RSQUARE;
 terminal            PIPE, COMMA;
 terminal            SEMI;
 terminal            ASSIGN, COLON, ASSIGNDECL;
@@ -53,6 +53,10 @@ terminal String ID;
 
 /** Read & Write **/
 terminal IN, OUT, OUTNL;
+
+//aggiungo i terminal
+terminal ARRAY, OF;
+
 
 /* Non terminals */
 non terminal ProgramOp Programma;
@@ -68,8 +72,8 @@ non terminal FunCall FunCall;
 /** Types and Constants **/
 non terminal  OptType;
 non terminal  TypeOrConstant;
-non terminal   Type Type;
-non terminal   Expr Constant;
+non terminal  Type Type;
+non terminal  Expr Constant;
 
 /** List of variables **/
 non terminal ParDecl ParDecl;
@@ -84,6 +88,8 @@ non terminal ArrayList<Decl> Decls;
 non terminal ArrayList<Identifier> Vars;
 non terminal ParVar PVar;
 non terminal ArrayList<ParVar> PVars;
+non terminal ArrayType ArrayType;
+non terminal ArrayAccess ArrayAccess;
 
 /* Precedences */
 precedence left OR;
@@ -120,7 +126,8 @@ VarsOptInit ::= ID:id PIPE VarsOptInit:list {: list.add(new VarInit( new Identif
 
 
 TypeOrConstant ::= Type:type {:RESULT=type;:}
-               | Constant:constant {:RESULT=constant;:};
+               | Constant:constant {:RESULT=constant;:}
+               | ARRAY LPAR INT_CONST:cost RPAR OF Type:t {:RESULT= new ArrayType(t,cost);:};
 
 Type ::= INT {: RESULT=Type.INTEGER;:}
      | BOOL {:RESULT=Type.BOOLEAN;:}
@@ -170,7 +177,8 @@ Stat ::= Vars:vars_list IN SEMI {:RESULT= new ReadOp(vars_list);:}
     | RETURN Expr:exp SEMI{:RESULT=new ReturnStat(exp);:};
 
 Vars ::= ID:id_attr PIPE Vars:list {: list.add(new Identifier(id_attr)); RESULT = list;:}
-     | ID:id_attrib {:ArrayList<Identifier> list = new ArrayList<Identifier>(); list.add(new Identifier(id_attrib)); RESULT = list;:};
+     | ID:id_attrib {:ArrayList<Identifier> list = new ArrayList<Identifier>(); list.add(new Identifier(id_attrib)); RESULT = list;:}
+     | ID:id LSQUARE INT_CONST:i RSQUARE{:ArrayList<Identifier> list = new ArrayList<Identifier>(); list.add(new Identifier(id,i)); RESULT = list; :};
 
 Exprs ::= Expr:attrib COMMA Exprs:list {: list.add((Expr) attrib); RESULT = list;:}
         | Expr:attrib {:ArrayList<Expr> list=new ArrayList<Expr>(); list.add((Expr) attrib); RESULT = list;:};
@@ -196,5 +204,6 @@ FunCall ::= ID:id_attrib LPAR Exprs:ref RPAR {:RESULT = new FunCall(new Identifi
               | ID:id         {:RESULT=new Identifier(id);:}
               // Funcall utilizzate nelle espressione
               | FunCall:e1  {:RESULT=e1;:}
-              | Constant:e1 {:RESULT=e1;:};
+              | Constant:e1 {:RESULT=e1;:}
+              | ID:id LSQUARE INT_CONST:i RSQUARE{: RESULT = new ArrayAccess(new Identifier(id), new IntegerNode(i)); :};
 

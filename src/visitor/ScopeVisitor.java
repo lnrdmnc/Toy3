@@ -15,6 +15,7 @@ import node.pardecl.ParDecl;
 import node.pardecl.ParVar;
 import node.program.ProgramOp;
 import node.stat.*;
+import node.vardecl.ArrayType;
 import node.vardecl.VarDecl;
 import node.vardecl.VarInit;
 import visitor.utils.*;
@@ -711,6 +712,22 @@ public class ScopeVisitor implements Visitor {
 
         return null;
     }
+
+    @Override
+    public Object visit(ArrayAccess arrayAccess) {
+        // Recupera la tabella corrente
+        TabellaDeiSimboli tabella = typeenv.peek();
+        arrayAccess.setTabellaDeiSimboli(tabella);
+
+        // Visita l'identificatore dell'array
+        arrayAccess.getId().accept(this);
+
+        // Visita l'indice
+        arrayAccess.getIndexExpr().accept(this);
+
+        return null;
+    }
+
 
     // --- METODI DI UTILITÀ ---
 

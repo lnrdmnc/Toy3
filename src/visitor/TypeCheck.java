@@ -17,9 +17,11 @@ import node.pardecl.ParDecl;
 import node.pardecl.ParVar;
 import node.program.ProgramOp;
 import node.stat.*;
+import node.vardecl.ArrayType;
 import node.vardecl.VarDecl;
 import node.vardecl.VarInit;
 import org.w3c.dom.Node;
+import visitor.utils.RigaTabellaDeiSimboli;
 import visitor.utils.TabellaDeiSimboli;
 import visitor.utils.TipoFunzione;
 
@@ -452,32 +454,54 @@ public class TypeCheck implements Visitor {
     @Override
     public Object visit(AssignOp assignOp) {
         ArrayList<Identifier> variabiliAssegnate = assignOp.getVariables();
-        // Prima controlla i tipi di tutte le variabili
-        for (Identifier id: variabiliAssegnate){
+
+        // visita LHS
+        for (Identifier id: variabiliAssegnate) {
             id.accept(this);
         }
 
         ArrayList<Expr> expressions = (ArrayList<Expr>) assignOp.getExpressions();
-        // Poi controlla i tipi di tutte le espressioni
-        for(Expr expr: expressions){
+
+        // visita RHS
+        for (Expr expr: expressions) {
             expr.accept(this);
         }
 
-        // Verifica compatibilità tipo per ogni assegnazione
-        for(int i = 0; i < variabiliAssegnate.size(); i++){
-            Type tipoVariabiliAssegnate = variabiliAssegnate.get(i).getType();
-            Type tipoEspressioni = expressions.get(i).getType();
+        // compatibilità tipi
+        for (int i = 0; i < variabiliAssegnate.size(); i++) {
+            Identifier lhsId = variabiliAssegnate.get(i);
+            Type lhsType = lhsId.getType();            // oggi: ARRAY per 'a'
+            Type rhsType = expressions.get(i).getType();
 
-            // Permette conversione implicita int -> double
-            if(tipoVariabiliAssegnate == Type.DOUBLE && tipoEspressioni == Type.INTEGER){
-                System.out.println("ok  Type check assign op");
-            } else if(tipoVariabiliAssegnate != tipoEspressioni){
-                throw new RuntimeException("The variable " + variabiliAssegnate.get(i).getName() + " is not compatible with the expression " + expressions.get(i) + ", are not the same.");
+            // NOVITÀ: se è un accesso indicizzato (a[...]),
+            // il tipo dell'l-value è il tipo ELEMENTO dell'array.
+            if (lhsId.hasIndex()) {
+                // opzionale: verifica che la variabile sia davvero un array
+                if (lhsType != Type.ARRAY) {
+                    throw new RuntimeException(lhsId.getName() + " non è un array.");
+                }
+                // Se il tuo linguaggio supporta solo array di int:
+                lhsType = Type.INTEGER;
+
+                // (facoltativo) bound-check: se hai la dimensione salva, verifica lhsId.getIndex() < dimensione
+                // altrimenti lo salti: l’indice è già costante per sintassi.
+            }
+
+            // implicit int -> double
+            if (lhsType == Type.DOUBLE && rhsType == Type.INTEGER) {
+                // ok
+            } else if (lhsType != rhsType) {
+                throw new RuntimeException(
+                        "The variable " + lhsId.getName() +
+                                " is not compatible with the expression " + expressions.get(i) + ", are not the same."
+                );
             }
         }
+
         assignOp.setType(Type.NOTYPE);
         return assignOp.getType();
     }
+
 
     /**
      * Visita un'operazione di scrittura
@@ -715,6 +739,67 @@ public class TypeCheck implements Visitor {
         }
         return clone;
     }
+
+    @Override
+    public Object visit(ArrayAccess arrayAccess) {
+
+        Identifier id = arrayAccess.getId();
+        id.accept(this);
+
+        // Recupera il tipo della variabile
+        Type idType = id.getType();
+
+        //  Controlla che sia un array
+        if (idType != Type.ARRAY) {
+            throw new RuntimeException("Errore: " + id.getName() + " non è un array.");
+        }
+
+        // Analizza l'espressione dell'indice
+        Expr indexExpr = arrayAccess.getIndexExpr();
+        indexExpr.accept(this);
+
+        // L'indice deve essere una costante intera
+        if (!(indexExpr instanceof IntegerNode)) {
+            throw new RuntimeException("Errore: l'indice deve essere una costante intera.");
+        }
+
+        int indexValue = (int) ((IntegerNode) indexExpr).getValue();
+
+        //  Recupera informazioni di tipo array dalla tabella dei simboli
+        // Se hai aggiunto una struttura "ArrayType" legata alla variabile,
+        // puoi recuperarla dalla symbol table
+
+        // Prendiamo la tabella corrente
+        TabellaDeiSimboli tabella = typeenv.peek();
+        RigaTabellaDeiSimboli riga = tabella.getRiga(id, "variable");
+
+        if (riga == null) {
+            throw new RuntimeException("Errore: variabile " + id.getName() + " non dichiarata.");
+        }
+
+        if (!(riga.getFirma() instanceof visitor.utils.FirmaVariabile firma)) {
+            throw new RuntimeException("Errore interno: la firma della variabile non è corretta.");
+        }
+
+        // Se la firma rappresenta un array, deve contenere il maxIndex
+        // (puoi averlo salvato in ArrayType o in un campo extra)
+        // Esempio se usi ArrayType:
+        if (firma.getType() == Type.ARRAY && riga.getFirma() instanceof node.vardecl.ArrayType arrInfo) {
+            if (indexValue >= arrInfo.getDimension()) {
+                throw new RuntimeException("Errore: indice " + indexValue +
+                        " fuori limite massimo (" + arrInfo.getDimension() + ") per array " + id.getName());
+            }
+            // L'accesso a un elemento ha il tipo base dell'array
+            arrayAccess.setType(arrInfo.getType());
+            return arrInfo.getType();
+        }
+
+        // Se non hai un oggetto ArrayType ma solo Type.ARRAY
+        // puoi impostare genericamente il tipo base dell'array come INTEGER (o altro tipo noto)
+        arrayAccess.setType(Type.INTEGER); // o il tipo base noto
+        return Type.INTEGER;
+    }
+
 
     /**
      * Cerca una variabile nelle tabelle dei simboli e ne restituisce il tipo

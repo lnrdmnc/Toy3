@@ -1,0 +1,5 @@
+program
+a: array(5) of int;
+begin
+a[0] := 10;
+end

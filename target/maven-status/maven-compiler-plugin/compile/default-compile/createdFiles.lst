@@ -17,6 +17,7 @@ node/expr/operation/BinaryOp.class
 visitor/utils/Firma.class
 node/expr/constant/TrueNode.class
 node/expr/constant/StringNode.class
+node/vardecl/ArrayType.class
 visitor/utils/Duplicato.class
 node/stat/WhileOp.class
 visitor/utils/FirmaVariabile.class
@@ -27,7 +28,6 @@ node/expr/constant/Identifier.class
 main/java/compiler/Parser.class
 visitor/utils/TabellaDeiSimboli.class
 node/stat/ReadOp.class
-node/vardecl/VarDecl.class
 node/Visitor.class
 visitor/utils/TipoFunzione.class
 node/expr/constant/FalseNode.class

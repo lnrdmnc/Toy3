@@ -16,6 +16,7 @@ import node.pardecl.ParDecl;
 import node.pardecl.ParVar;
 import node.program.ProgramOp;
 import node.stat.*;
+import node.vardecl.ArrayType;
 import node.vardecl.VarDecl;
 import node.vardecl.VarInit;
 import visitor.utils.TabellaDeiSimboli;
@@ -149,7 +150,16 @@ public class GeneratoreCodiceC implements Visitor {
         if (identifier.isRef()) {
             builder.append("*");  // Dereferenziazione per parametri passati per riferimento
         }
+
+        // 1) prima il nome
         builder.append(identifier.getName());
+
+        if (identifier.hasIndex()) {           //  aggiungi questo
+            builder.append("[")
+                    .append(identifier.getIndex())
+                    .append("]");
+        }
+
         return builder.toString();
     }
 
@@ -348,6 +358,20 @@ public class GeneratoreCodiceC implements Visitor {
     @Override
     public String visit(VarDecl varDecl) {
         StringBuilder builder = new StringBuilder();
+        // DICHIARAZIONE ARRAY → T name[dim];
+        if (varDecl.getType() == Type.ARRAY) {
+            node.vardecl.ArrayType arr = varDecl.getArrayInfo();   // prendi l’oggetto
+            if (arr == null) throw new RuntimeException("Array info mancante.");
+            String cElem = getCType(arr.getType());                 // int/double/...
+            int dim = arr.getDimension();
+
+            for (VarInit vi : varDecl.getVariables()) {
+                String name = (String) vi.getId().accept(this);
+                builder.append(cElem).append(" ").append(name)
+                        .append("[").append(dim).append("];\n");
+            }
+            return builder.toString();
+        }
 
         if (varDecl.getCostant() != null) {
             // Dichiarazione con inizializzazione da costante
@@ -413,6 +437,23 @@ public class GeneratoreCodiceC implements Visitor {
             } else {
                 builder.append(getCType(parDecl.getType())).append(" ").append(ref).append(variable.accept(this)).append(",");
             }
+        }
+
+        for (int i = size; i >= 0; i--) {
+            variable = parDecl.getVariables().get(i);
+            String name = (String) variable.accept(this);
+
+            String oneParam;
+            if (parDecl.getType() == Type.ARRAY) {
+                // Scegli il tipo elemento dell’array per i parametri (default: int)
+                String elemCtype = getCType(Type.INTEGER);
+                oneParam = elemCtype + " *" + name;
+            } else {
+                oneParam = getCType(parDecl.getType()) + " " + name;
+            }
+
+            builder.append(oneParam);
+            if (i > 0) builder.append(",");
         }
         return builder.toString();
     }
@@ -501,6 +542,13 @@ public class GeneratoreCodiceC implements Visitor {
         builder.append("    return 0;\n");
         builder.append("}\n");
         return builder.toString();
+    }
+
+    @Override
+    public String visit(ArrayAccess arrayAccess) {
+        String id = (String) arrayAccess.getId().accept(this);
+        String index = (String) arrayAccess.getIndexExpr().accept(this);
+        return id + "[" + index + "]";
     }
 
     /**

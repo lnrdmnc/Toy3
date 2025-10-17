@@ -19,6 +19,8 @@ public class Identifier implements Expr {
     // Tabella dei simboli associata al nodo, utile per la gestione degli scope
     private TabellaDeiSimboli tabellaDeiSimboli;
 
+    private int index=-1;
+
     // Tipo del nodo, che rappresenta il tipo di dato associato
     private Type type;
 
@@ -64,6 +66,27 @@ public class Identifier implements Expr {
      */
     public Identifier(Object name) {
         this.name = (String) name;
+    }
+
+    public Identifier(Object name, int index) {
+        this.index = index;
+        this.name = (String) name;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+
+    // true se l'identificatore ha un indice valido
+    public boolean hasIndex() {
+        return index >= 0;
+    }
+
+
+    // se ti serve anche un setter esplicito:
+    public void setIndex(int idx) {
+        this.index = idx;
     }
 
     /**

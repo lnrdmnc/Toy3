@@ -80,6 +80,8 @@ CharC = '[^\\[ntbrf\\\'\"]]' | {EscChar}
 <YYINITIAL> "program" { return symbol(sym.PROGRAM); }
 <YYINITIAL> "begin" { return symbol(sym.BEGIN); }
 <YYINITIAL> "end" { return symbol(sym.END); }
+<YYINITIAL> "array" { return symbol(sym.ARRAY); }
+<YYINITIAL> "of" { return symbol(sym.OF); }
 
 <YYINITIAL> {
 
@@ -109,6 +111,8 @@ CharC = '[^\\[ntbrf\\\'\"]]' | {EscChar}
     "}" { return symbol(sym.RBRAC); }
     ":" { return symbol(sym.COLON); }
     "=" { return symbol(sym.ASSIGNDECL); }
+    "[" { return symbol(sym.LSQUARE); }
+    "]" { return symbol(sym.RSQUARE); }
 
      /** Read & Write **/
      "<<" { return symbol(sym.IN); }

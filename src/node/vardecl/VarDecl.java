@@ -15,6 +15,7 @@ import visitor.utils.TabellaDeiSimboli;
  */
 public class VarDecl extends ASTNode implements Decl {
 
+    private ArrayType arrayInfo;
     // Lista di variabili (es. "x | y = 5")
     private ArrayList<VarInit> variables;
 
@@ -68,7 +69,12 @@ public class VarDecl extends ASTNode implements Decl {
      */
     public VarDecl(Object variables, Object typeOrConstant) {
         this.variables = (ArrayList<VarInit>) variables;
-        if (typeOrConstant instanceof Type) {
+
+        if(typeOrConstant instanceof ArrayType at){
+
+            this.arrayInfo = at;        // <-- conserviamo l’oggetto con dimensione + elemType
+            this.type = Type.ARRAY;     // <-- importante: il "tipo" della variabile è ARRAY
+        }else if (typeOrConstant instanceof Type) {
             this.type = (Type) typeOrConstant;
         } else if (typeOrConstant instanceof Expr) {
             this.costant = (Expr) typeOrConstant;
@@ -91,6 +97,10 @@ public class VarDecl extends ASTNode implements Decl {
      */
     public Expr getCostant() {
         return costant;
+    }
+
+    public ArrayType getArrayInfo() {
+        return arrayInfo;
     }
 
     /**

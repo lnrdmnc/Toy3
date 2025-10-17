@@ -2,6 +2,7 @@ package node;
 
 import node.expr.Expr;
 import node.expr.constant.*;
+import node.vardecl.ArrayType;
 
 public enum Type {
     INTEGER,
@@ -9,6 +10,7 @@ public enum Type {
     DOUBLE,
     STRING,
     CHAR,
+    ARRAY,
     NOTYPE;
 
     public static Type getTypeFromExpr(Expr constant){
@@ -24,6 +26,9 @@ public enum Type {
             return Type.STRING;
         } else if(constant instanceof TrueNode) {
             return Type.BOOLEAN;
+        }
+        else if(constant instanceof ArrayType){
+            return Type.ARRAY;
         }
         return null;
     }
