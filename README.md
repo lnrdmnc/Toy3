@@ -1,4 +1,4 @@
-# 🖥️ Compilatore — Versione Breve
+# 🖥️ Compilatore Toy3
 
 Questo progetto implementa un **compilatore completo** per un piccolo linguaggio imperativo.  
 È composto da: **Lexer (JFlex)**, **Parser (CUP)**, **AST**, **Symbol Table & Scope**, **Type Checker** e **Generatore di Codice C**.
@@ -116,3 +116,4 @@ Alcune componenti e aggiornamenti aggiuntivi sono presenti nel *branch di svilup
 
 ## 🏁 Conclusione
 Il compilatore fornisce tutte le fasi essenziali per un linguaggio imperativo: analisi, costruzione AST, controllo semantico e generazione del codice C. È modulare, estensibile e facilmente mantenibile.
+
