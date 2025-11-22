@@ -1,0 +1,19 @@
+program
+
+
+def moltiplicazione( x: int; y: int;  res : int):double{
+risultato:int;
+risultato:=x*y*res;
+return risultato;
+}
+
+
+risultato:double;
+
+
+begin
+risultato:=inc(moltiplicazione(3,2,1));
+risultato !>>;
+end
+
+

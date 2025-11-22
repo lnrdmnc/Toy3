@@ -12,6 +12,7 @@ import node.expr.Expr;
 import node.expr.constant.*;
 import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
+import node.expr.operation.IncOp;
 import node.expr.operation.UnaryOp;
 import node.pardecl.ParDecl;
 import node.pardecl.ParVar;
@@ -46,6 +47,22 @@ public class TypeCheck implements Visitor {
     private Stack<TabellaDeiSimboli> typeenv = new Stack<TabellaDeiSimboli>();
     // Tabella dei simboli corrente per ottimizzazione accesso
     private TabellaDeiSimboli current_table;
+
+
+    public Object visit(IncOp incOp) {
+        FunCall funCall = incOp.getFunCall();
+        incOp.getFunCall().accept(this);
+
+        if (incOp.getFunCall().getType()!= Type.INTEGER) {
+            throw new RuntimeException("The parameter of INC operation must be of type INTEGER.");
+        }
+
+
+        incOp.setType(Type.INTEGER);
+        return incOp.getType();
+    }
+
+
 
     /**
      * Visita il nodo principale del programma e controlla la correttezza dei tipi

@@ -10,6 +10,7 @@ import node.expr.Expr;
 import node.expr.constant.*;
 import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
+import node.expr.operation.IncOp;
 import node.expr.operation.UnaryOp;
 import node.pardecl.ParDecl;
 import node.pardecl.ParVar;
@@ -43,6 +44,14 @@ public class ScopeVisitor implements Visitor {
     public ScopeVisitor() {
 
     }
+
+    public Object visit(IncOp incOp) {
+        TabellaDeiSimboli tabella= typeenv.peek();
+        incOp.setTabellaDeiSimboli(tabella);
+        incOp.getFunCall().accept(this);
+        return null;
+    }
+
 
     /**
      * Visita il nodo principale del programma e gestisce gli scope globali

@@ -1,0 +1,25 @@
+program
+
+
+def moltiplicazione( x: int; y: int;  res : int):int{
+risultato:int;
+risultato:=x*y*res;
+return risultato;
+}
+
+
+risultato:int;
+
+
+begin
+
+a|b :int;
+a|b <<;
+"Il valore di a " + a !>>;
+"Il valore di B " + b !>>;
+risultato:=inc(moltiplicazione(3,2,1));
+risultato !>>;
+end
+
+
+

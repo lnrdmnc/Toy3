@@ -11,6 +11,7 @@ import node.expr.Expr;
 import node.expr.constant.*;
 import node.expr.operation.BinaryOp;
 import node.expr.operation.FunCall;
+import node.expr.operation.IncOp;
 import node.expr.operation.UnaryOp;
 import node.pardecl.ParDecl;
 import node.pardecl.ParVar;
@@ -53,6 +54,28 @@ public class GeneratoreCodiceC implements Visitor {
     @Override
     public String visit(DoubleNode doubleNode) {
         return String.valueOf(doubleNode.getCostant());
+    }
+
+
+    public Object visit(IncOp incOp) {
+        StringBuilder builder= new StringBuilder();
+
+        if(incOp.getFunCall()!=null){
+            incOp.getFunCall().accept(this);
+
+            builder.append( incOp.getFunCall().getId().accept(this)).append("_fun");
+            builder.append("(");
+            for(int i=0; i< incOp.getFunCall().getArguments().size(); i++){
+                builder.append(incOp.getFunCall().getArguments().get(i).accept(this));
+                if(i!= incOp.getFunCall().getArguments().size()-1){
+                    builder.append(", ");
+                }
+            }
+
+            builder.append(")");
+        }
+
+        return builder.toString()+ "+1";
     }
 
     /**

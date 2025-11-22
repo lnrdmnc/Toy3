@@ -47,7 +47,7 @@ terminal            LPAR, RPAR, LBRAC, RBRAC;
 terminal            PIPE, COMMA;
 terminal            SEMI;
 terminal            ASSIGN, COLON, ASSIGNDECL;
-
+terminal            INC;
 /** Identifiers **/
 terminal String ID;
 
@@ -196,5 +196,6 @@ FunCall ::= ID:id_attrib LPAR Exprs:ref RPAR {:RESULT = new FunCall(new Identifi
               | ID:id         {:RESULT=new Identifier(id);:}
               // Funcall utilizzate nelle espressione
               | FunCall:e1  {:RESULT=e1;:}
-              | Constant:e1 {:RESULT=e1;:};
+              | Constant:e1 {:RESULT=e1;:}
+              |INC LPAR FunCall:f RPAR {:RESULT=new IncOp(f);:};
 
